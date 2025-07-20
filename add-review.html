@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar Reseña - UNAH</title>
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+</head>
+<body>
+    <nav class="navbar">
+    <div class="navbar-container">
+        <!-- Logo UNAH (opcional) -->
+        <a href="index.html" class="navbar-logo">
+            <img src="img/logo-unah.png" alt="UNAH" width="40">
+            <span>UnahRate</span>
+        </a>
+        
+        <!-- Menú Principal -->
+        <ul class="navbar-menu">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="reviews.html">Reseñas</a></li>
+            <li><a href="add-review.html">Agregar Reseña</a></li>
+            <li><a href="admin.html">Moderación</a></li>
+        </ul>
+
+        <!-- Botón para móviles -->
+        <button class="navbar-toggle" aria-label="Menú">
+            ☰
+        </button>
+    </div>
+</nav>
+
+    <main>
+        <form id="reviewForm" class="review-form">
+            <div class="title">Formulario</div>
+            <div class="form-group">
+                <label for="professorName">Profesor:</label>
+                <input type="text" id="professorName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="courseName">Curso/Materia:</label>
+                <input type="text" id="courseName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="faculty">Facultad:</label>
+                <select id="faculty" required>
+                    <option value="">Selecciona una facultad</option>
+                    <option value="CienciasSociales">Ciencias Sociales</option>
+                    <option value="QuimicayFarmacia">Química y Farmacia</option>
+                    <option value="Odontologia">Odontología</option>
+                    <option value="CienciasJuridicas">Ciencias Jurídicas</option>
+                    <option value="Ingenieria">Ingeniería</option>
+                    <option value="HumanidadesyArtes">Humanidades y Artes</option>
+                    <option value="CienciasEspaciales">Ciencias Espaciales</option>
+                    <option value="CienciasEconomicasAdministrativasyContables">Ciencias Económicas, Administrativas y Contables</option>
+                    <option value="Ciencias">Ciencias</option>
+                    <option value="CienciasMedicas">Ciencias Médicas</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="campus">Campus:</label>
+                <select id="campus" required>
+                    <option value="">Selecciona un campus</option>
+                    <option value="Tegucigalpa">UNAH Tegucigalpa</option>
+                    <option value="SanPedro">UNAH San Pedro Sula</option>
+                    <option value="Comayagua">UNAH Comayagua</option>
+                    <option value="Atlantida">UNAH Atlántida</option>
+                    <option value="Choluteca">UNAH Choluteca</option>
+                    <option value="Copan">UNAH Copán</option>
+                    <option value="Olancho">UNAH Olancho</option>
+                    <option value="ElParaiso">UNAH El Paraíso</option>
+                    <option value="Yoro">UNAH Yoro</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="rating">Calificación:</label>
+                <select id="rating" required>
+                    <option value="">Selecciona</option>
+                    <option value="5">★★★★★ (Excelente)</option>
+                    <option value="4">★★★★☆ (Bueno)</option>
+                    <option value="3">★★★☆☆ (Regular)</option>
+                    <option value="2">★★☆☆☆ (Deficiente)</option>
+                    <option value="1">★☆☆☆☆ (Pésimo)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="comment">Comentario:</label>
+                <textarea id="comment" rows="5" required></textarea>
+            </div>
+
+            <button type="submit">Enviar Reseña</button>
+        </form>
+    </main>
+
+    <footer>
+        <div class="footer-links">
+            <a href="privacy.html">Política de Privacidad</a>
+            <a href="terms.html">Términos de Servicio</a>
+        </div>
+        <p>© 2025 - Unah Rate</p>
+    </footer>
+
+    <!-- Firebase y lógica -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/add-review.js"></script>
+    <script src="js/navbar.js"></script>
+</body>
+</html>

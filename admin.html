@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Moderación - UNAH</title>
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/navbar.css">
+</head>
+<body>
+    <nav class="navbar">
+    <div class="navbar-container">
+        <!-- Logo UNAH (opcional) -->
+        <a href="index.html" class="navbar-logo">
+            <img src="img/logo-unah.png" alt="UNAH" width="40">
+            <span>UnahRate</span>
+        </a>
+        
+        <!-- Menú Principal -->
+        <ul class="navbar-menu">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="reviews.html">Reseñas</a></li>
+            <li><a href="add-review.html">Agregar Reseña</a></li>
+            <li><a href="admin.html">Moderación</a></li>
+        </ul>
+
+        <!-- Botón para móviles -->
+        <button class="navbar-toggle" aria-label="Menú">
+            ☰
+        </button>
+    </div>
+</nav>
+
+<button id="logoutButton">Cerrar Sesión</button></body>
+
+    <div class="login-form" id="loginForm">
+        <h2>Iniciar Sesión</h2>
+        <input type="email" id="email" placeholder="Correo electrónico">
+        <input type="password" id="password" placeholder="Contraseña">
+        <button id="loginButton">Acceder</button>
+    </div>
+
+    <div class="admin-panel" id="adminPanel" style="display: none;">
+        <h2>Reseñas Reportadas</h2>
+        <div id="reportedReviews"></div>
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="privacy.html">Política de Privacidad</a>
+            <a href="terms.html">Términos de Servicio</a>
+        </div>
+        <p>© 2025 - Unah Rate</p>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/navbar.js"></script>
+</body>
+</html>

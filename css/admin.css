@@ -1,0 +1,62 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.login-form, .admin-panel {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+input, #loginButton, #logoutButton, #approveButton, #deleteButton {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#loginButton, #logoutButton, #approveButton, #deleteButton {
+    background-color: #0a4b78;
+    color: white;
+    cursor: pointer;
+}
+
+.review-item {
+    border-bottom: 1px solid #eee;
+    padding: 1rem 0;
+}
+
+footer, #textfooter {
+    text-align: center;
+    padding: 20px 0;
+    background: #007bff;
+    color: white;
+    position: relative;
+    bottom: 0px;
+    width: 100%;
+    margin-top: auto;
+}
+
+.footer-links {
+    margin: 10px 0;
+}
+
+.footer-links a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}

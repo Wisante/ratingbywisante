@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reseñas UNAH</title>
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+</head>
+<body>
+    <nav class="navbar">
+    <div class="navbar-container">
+        <!-- Logo UNAH (opcional) -->
+        <a href="index.html" class="navbar-logo">
+            <img src="img/logo-unah.png" alt="UNAH" width="40">
+            <span>UnahRate</span>
+        </a>
+        
+        <!-- Menú Principal -->
+        <ul class="navbar-menu">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="reviews.html">Reseñas</a></li>
+            <li><a href="add-review.html">Agregar Reseña</a></li>
+            <li><a href="admin.html">Moderación</a></li>
+        </ul>
+
+        <!-- Botón para móviles -->
+        <button class="navbar-toggle" aria-label="Menú">
+            ☰
+        </button>
+    </div>
+</nav>
+
+    <main>
+        <h1 id="pageTitle">Reseñas</h1>
+
+        <section class="search-professor">
+        <input type="text" id="professorSearch" placeholder="Nombre del profesor">
+        <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><g><path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path></g></svg>
+        </section>
+
+        <section class="search-faculty">
+        <select id="facultySearch">
+            <option value="">Todas las facultades</option>
+            <option value="CienciasSociales">Ciencias Sociales</option>
+            <option value="QuimicayFarmacia">Química y Farmacia</option>
+            <option value="Odontologia">Odontología</option>
+            <option value="CienciasJuridicas">Ciencias Jurídicas</option>
+            <option value="Ingenieria">Ingeniería</option>
+            <option value="HumanidadesyArtes">Humanidades y Artes</option>
+            <option value="CienciasEspaciales">Ciencias Espaciales</option>
+            <option value="CienciasEconomicasAdministrativasyContables">Ciencias Económicas, Administrativas y Contables</option>
+            <option value="Ciencias">Ciencias</option>
+            <option value="CienciasMedicas">Ciencias Médicas</option>
+        </select>
+        <button id="searchButton">Buscar</button>
+        </section>
+
+        <div id="reviewsList" class="reviews-container"></div>
+    </main>
+
+    <footer>
+        <div class="footer-links">
+            <a href="privacy.html">Política de Privacidad</a>
+            <a href="terms.html">Términos de Servicio</a>
+        </div>
+        <p>© 2025 - Unah Rate</p>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="js/reviews.js"></script>
+    <script src="js/navbar.js"></script>
+</body>
+</html>
