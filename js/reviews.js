@@ -1,15 +1,39 @@
-// Configuración de Firebase (reemplaza con tus datos)
-const firebaseConfig = {
-    apiKey: "AIzaSyB6OcysAu9gywwtdQgwh0jABjXGV1lUKis",
-    authDomain: "unahrate.firebaseapp.com",
-    projectId: "unah-rate",
-    storageBucket: "unahrate.appspot.com",
-    messagingSenderId: "TU_SENDER_ID",
-    appId: "TU_APP_ID"
+fetch('/.netlify/functions/getFirebaseConfig')
+  .then(response => response.json())
+  .then(config => {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(config);
+    }
+    
+    const db = firebase.firestore();
+
+// En tu archivo reviews.js (al inicio)
+window.voteHelpful = function(reviewId, isHelpful) {
+  const userId = localStorage.getItem("userId") || generateUserId();
+  const votedReviews = JSON.parse(localStorage.getItem("votedReviews") || "[]");
+  
+  if (votedReviews.includes(reviewId)) {
+    alert("Ya votaste esta reseña");
+    return;
+  }
+
+  db.collection("reviews").doc(reviewId).update({
+    helpfulCount: firebase.firestore.FieldValue.increment(1)
+  }).then(() => {
+    votedReviews.push(reviewId);
+    localStorage.setItem("votedReviews", JSON.stringify(votedReviews));
+    loadReviews();
+  }).catch(error => console.error("Error al votar:", error));
 };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+window.reportReview = function(reviewId) {
+  if (confirm("¿Reportar esta reseña?")) {
+    db.collection("reviews").doc(reviewId).update({
+      reported: true,
+      reportedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => alert("Reseña reportada"));
+  }
+};
 
 // Obtener parámetro de URL (ej: reviews.html?campus=Tegucigalpa)
 const urlParams = new URLSearchParams(window.location.search);
@@ -22,7 +46,7 @@ document.getElementById("pageTitle").textContent =
 // Cargar reseñas filtradas
 function loadReviews() {
     const container = document.getElementById("reviewsList");
-    container.innerHTML = "<p>Cargando reseñas...</p>";
+    container.innerHTML = `<p>Cargando reseñas...</p>`;
 
     // Consulta todas las reseñas ordenadas por fecha
     db.collection("reviews")
@@ -84,39 +108,6 @@ function loadReviews() {
             console.error("Error al cargar reseñas:", error);
             container.innerHTML = `<p class="error">Error al cargar reseñas: ${error.message}</p>`;
         });
-}
-
-// Función para votar
-function voteHelpful(reviewId, isHelpful) {
-    const userId = localStorage.getItem("userId") || generateUserId(); // Identificador único por usuario
-    
-    // Evitar votos duplicados
-    const votedReviews = JSON.parse(localStorage.getItem("votedReviews") || "[]");
-    if (votedReviews.includes(reviewId)) {
-        alert("Ya votaste esta reseña.");
-        return;
-    }
-
-    // Actualizar contador en Firestore
-    db.collection("reviews").doc(reviewId).update({
-        helpfulCount: firebase.firestore.FieldValue.increment(isHelpful ? 1 : 0)
-    })
-    .then(() => {
-        localStorage.setItem("votedReviews", JSON.stringify([...votedReviews, reviewId]));
-        loadReviews(); // Recargar reseñas
-    })
-    .catch((error) => console.error("Error al votar:", error));
-}
-
-function reportReview(reviewId) {
-    if (confirm("¿Reportar esta reseña?")) {
-        db.collection("reviews").doc(reviewId).update({
-            reported: true,
-            reportedAt: new Date()
-        })
-        .then(() => alert("Reseña reportada. Gracias por tu feedback."))
-        .catch((error) => console.error("Error al reportar:", error));
-    }
 }
 
 let currentProfessors = [];
@@ -181,7 +172,7 @@ function displayProfessorProfile(professor) {
     const container = document.getElementById("reviewsList");
     const campus = professor.reviews[0].campus || "Tegucigalpa"; // Asumir campus del primer review
     container.innerHTML = `
-    <button class="back-button" onclick="displayProfessorsList(currentProfessors)">← Volver</button>
+    <button class="back-button" data-action="back">← Volver</button>
         <div class="professor-profile-header">
             <h2>${professor.name}</h2>
             <p>Profesor de la facultad de <span class="faculty-badge">${professor.faculty}</span> en el campus de <span class="faculty-badge">${campus}</span></p>
@@ -275,5 +266,19 @@ function generateUserId() {
     return id;
 }
 
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('back-button')) {
+    e.preventDefault();
+    if (currentProfessors.length > 0) {
+      displayProfessorsList(currentProfessors);
+    } else {
+      loadReviews(); // O redirige a la página principal
+    }
+  }
+});
+
 // Iniciar carga
 loadReviews();
+
+  })
+  .catch(error => console.error("Error loading Firebase config:", error));

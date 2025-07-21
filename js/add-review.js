@@ -1,15 +1,11 @@
-// Configuración de Firebase (reemplaza con tus datos)
-const firebaseConfig = {
-    apiKey: "AIzaSyB6OcysAu9gywwtdQgwh0jABjXGV1lUKis",
-    authDomain: "unahrate.firebaseapp.com",
-    projectId: "unah-rate",
-    storageBucket: "unahrate.appspot.com",
-    messagingSenderId: "TU_SENDER_ID",
-    appId: "TU_APP_ID"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+fetch('/.netlify/functions/getFirebaseConfig')
+  .then(response => response.json())
+  .then(config => {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(config);
+    }
+    // El resto de tu código (db, auth, etc.)
+    const db = firebase.firestore();
 
 function generateProfessorId(name) {
     return name.toLowerCase()
@@ -22,18 +18,6 @@ function generateProfessorId(name) {
 document.getElementById("reviewForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-        // Verificar límite diario (con await)
-        const today = new Date().toISOString().split('T')[0];
-        const userReviews = await db.collection("reviews")
-            .where("userId", "==", user.uid)
-            .where("date", ">=", today)
-            .get();
-
-        if (userReviews.size >= 3) {
-            alert("Has alcanzado el límite diario de reseñas");
-            return;
-        }
-
     const professorName = document.getElementById("professorName").value;
     const courseName = document.getElementById("courseName").value;
     const campus = document.getElementById("campus").value;
@@ -43,8 +27,8 @@ document.getElementById("reviewForm").addEventListener("submit", async (e) => {
     const professorId = generateProfessorId(professorName);
 
 // En add-review.js
-if (professorName.length < 2 || professorName.length > 50) {
-  alert("Nombre de profesor inválido");
+if (!professorName || professorName.length < 2 || professorName.length > 50) {
+  alert("El nombre del profesor debe tener entre 2 y 50 caracteres");
   return;
 }
 
@@ -69,3 +53,6 @@ if (professorName.length < 2 || professorName.length > 50) {
         alert("Ocurrió un error. Intenta nuevamente.");
     });
 });
+
+  })
+  .catch(error => console.error("Error loading Firebase config:", error));

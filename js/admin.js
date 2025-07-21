@@ -1,15 +1,33 @@
-const firebaseConfig = {
-    apiKey: "AIzaSyB6OcysAu9gywwtdQgwh0jABjXGV1lUKis",
-    authDomain: "unahrate.firebaseapp.com",
-    projectId: "unah-rate",
-    storageBucket: "unahrate.appspot.com",
-    messagingSenderId: "TU_SENDER_ID",
-    appId: "TU_APP_ID"
+fetch('/.netlify/functions/getFirebaseConfig')
+  .then(response => response.json())
+  .then(config => {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(config);
+    }
+
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+window.deleteReview = async (reviewId) => {
+  try {
+    if (!confirm("¿Eliminar reseña?")) return;
+    await db.collection("reviews").doc(reviewId).delete();
+    loadReportedReviews();
+  } catch (error) {
+    console.error("Error al eliminar:", error);
+    alert("Error al eliminar. Revisa la consola.");
+  }
 };
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+window.approveReview = async (reviewId) => {
+  try {
+    await db.collection("reviews").doc(reviewId).update({ reported: false });
+    loadReportedReviews();
+  } catch (error) {
+    console.error("Error al aprobar:", error);
+    alert("Error al aprobar. Revisa la consola.");
+  }
+};
 
 // Login
 document.getElementById("loginButton").addEventListener("click", () => {
@@ -60,17 +78,6 @@ function loadReportedReviews() {
         });
 }
 
-// Funciones de moderación
-function deleteReview(id) {
-    db.collection("reviews").doc(id).delete()
-        .then(() => loadReportedReviews());
-}
-
-function approveReview(id) {
-    db.collection("reviews").doc(id).update({ reported: false })
-        .then(() => loadReportedReviews());
-}
-
 // Logout
 document.getElementById("logoutButton").addEventListener("click", () => {
     auth.signOut()
@@ -85,3 +92,6 @@ auth.onAuthStateChanged((user) => {
         loadReportedReviews();
     }
 });
+
+  })
+  .catch(error => console.error("Error loading Firebase config:", error));
