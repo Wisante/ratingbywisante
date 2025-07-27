@@ -1,6 +1,6 @@
 /* Estilos generales */
 .navbar {
-    background-color: #007bff; /* Azul UNAH */
+    background-color: #f4f4f4;
     z-index: 1000;
     color: white;
     padding: 1rem 0;
@@ -27,13 +27,14 @@
 }
 
 .navbar-logo img {
-    width: 55px; /* Ajusta el tamaño del logo */
-    height: auto;
+  max-width: 100%;
+  height: auto;
 }
 
 .navbar-logo span {
+  font-family: "Satisfy", cursive;
     font-size: 1.5rem;
-    color: #ffffff;
+    color: #000000;
 }
 
 /* Menú */
@@ -47,14 +48,16 @@
 }
 
 .navbar-menu a {
-    color: white;
+    color: #454545;
     text-decoration: none;
-    font-weight: 500;
-    transition: opacity 0.3s;
+    font-family: "Lilita One", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    transition: opacity 0.5s;
 }
 
 .navbar-menu a:hover {
-    opacity: 0.8;
+    color: #000000;
     text-decoration: underline;
 }
 
@@ -68,16 +71,22 @@
     cursor: pointer;
 }
 
+.navbar-menu a.active {
+    color: #000000;
+    text-decoration: underline;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .navbar-menu {
+        text-align: center;
         display: none;
         flex-direction: column;
         width: 100%;
         position: absolute;
         top: 70px;
         left: 0;
-        background-color: #0a4b78;
+        background-color: #ffffff;
         padding: 1rem 0;
     }
 
@@ -86,11 +95,7 @@
     }
 
     .navbar-toggle {
+        color: #000000;
         display: block;
     }
-}
-
-.navbar-menu a.active {
-    font-weight: bold;
-    text-decoration: underline;
 }

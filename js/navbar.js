@@ -13,3 +13,8 @@ document.querySelectorAll('.navbar-menu a').forEach(link => {
         link.classList.add('active');
     }
 });
+
+document.querySelector('.navbar-toggle').addEventListener('click', () => {
+  const menu = document.querySelector('.navbar-menu');
+  menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+});

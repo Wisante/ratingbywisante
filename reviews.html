@@ -2,8 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Reseñas UNAH</title>
+    <title>Reseñas - UNAH</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lilita+One&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/navbar.css">
 </head>
@@ -12,16 +17,16 @@
     <div class="navbar-container">
         <!-- Logo UNAH (opcional) -->
         <a href="index.html" class="navbar-logo">
-            <img src="img/logo-unah.png" alt="UNAH" width="40">
+            <img src="img/unahrate-logo.webp" alt="UNAH" width="40">
             <span>UnahRate</span>
         </a>
         
         <!-- Menú Principal -->
         <ul class="navbar-menu">
-            <li><a href="index.html">Inicio</a></li>
-            <li><a class="active" href="reviews.html">Reseñas</a></li>
-            <li><a href="add-review.html">Agregar Reseña</a></li>
-            <li><a href="admin.html">Moderación</a></li>
+            <li><a href="index.html"><i class="fas fa-home"></i> Inicio</a></li>
+            <li><a class="active" href="reviews.html"><i class="fa-solid fa-rectangle-list"></i> Reseñas</a></li>
+            <li><a href="add-review.html"><i class="fas fa-user-edit"></i> Agregar Reseña</a></li>
+            <li><a href="admin.html"><i class="fa-solid fa-screwdriver-wrench"></i> Moderación</a></li>
         </ul>
 
         <!-- Botón para móviles -->
@@ -67,8 +72,8 @@
         <p>© 2025 - Unah Rate</p>
     </footer>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js" integrity="sha384-gNTK1b3nq+NMsDf1ASdhbVEwXj9tjBeobuvcjWGlmIffN9OP+Q0SU9Q10JKPZryT" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js" integrity="sha384-RCX4/afwL4rcvPna7SzxURYLlkH4PeSnyydnrIn/zzZyviOL3A9RZjNPvXunkiFD" crossorigin="anonymous"></script>
     <script src="js/reviews.js"></script>
     <script src="js/navbar.js"></script>
 </body>

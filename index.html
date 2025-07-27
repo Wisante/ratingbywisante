@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>UNAH Rate - Inicio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lilita+One&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/cards.css">
     <link rel="stylesheet" href="css/navbar.css">
@@ -13,30 +18,35 @@
     <div class="navbar-container">
         <!-- Logo UNAH (opcional) -->
         <a href="index.html" class="navbar-logo">
-            <img src="img/logo-unah.png" alt="UNAH" width="40">
+            <img src="img/unahrate-logo.webp" alt="UNAH" width="40">
             <span>UnahRate</span>
         </a>
         
         <!-- Menú Principal -->
         <ul class="navbar-menu">
-            <li><a class="active" href="index.html">Inicio</a></li>
-            <li><a href="reviews.html">Reseñas</a></li>
-            <li><a href="add-review.html">Agregar Reseña</a></li>
-            <li><a href="admin.html">Moderación</a></li>
+            <li><a class="active" href="index.html"><i class="fas fa-home"></i> Inicio</a></li>
+            <li><a href="reviews.html"><i class="fa-solid fa-rectangle-list"></i> Reseñas</a></li>
+            <li><a href="add-review.html"><i class="fas fa-user-edit"></i> Agregar Reseña</a></li>
+            <li><a href="admin.html"><i class="fa-solid fa-screwdriver-wrench"></i> Moderación</a></li>
         </ul>
 
         <!-- Botón para móviles -->
         <button class="navbar-toggle" aria-label="Menú">
-            ☰
+            <i class="fa-solid fa-bars"></i>
         </button>
     </div>
 </nav>
 
-<div class="banner">
-    <h2>¡Comparte y Descubre Reseñas de Profesores!</h2>
-</div>
-
     <main>
+        <div class="contenedor">
+            <div class="contenedor-txt">
+                <p class="welcome">¡Bienvenido a UnahRate!</p>
+                <h1>¡Comparte y Descubre Reseñas de Profesores!</h1>
+                <p class="texto">Consulta experiencias de otros estudiantes, evalúa a tus profesores y ayuda a mejorar la calidad educativa en la Universidad Nacional Autónoma de Honduras.</p>
+            </div>
+            <div class="img"></div>
+        </div>
+
         <section class="search">
             <input type="text" id="searchInput" placeholder="Buscar materia...">
             <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><g><path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path></g></svg>
@@ -60,13 +70,13 @@
         </section>
 
         <div class="card-container">
-            <div class="card" onclick="window.location.href='add-review.html'">
-                <h3>➕ Agregar Reseña</h3>
+            <div class="card" data-nav-link="add-review.html">
+                <h2><i class="fa-solid fa-square-plus"></i> Agregar Reseña</h2>
                 <p class="pcard">Comparte tu experiencia con profesores y cursos.</p>
             </div>
             
-            <div class="card" onclick="window.location.href='reviews.html'">
-                <h3>📚 Ver Todas las Reseñas</h3>
+            <div class="card" data-nav-link="reviews.html">
+                <h2><i class="fa-solid fa-book"></i> Todas las Reseñas</h2>
                 <p class="pcard">Explora opiniones de otros estudiantes.</p>
             </div>
         </div>
@@ -77,19 +87,13 @@
             <a href="privacy.html">Política de Privacidad</a>
             <a href="terms.html">Términos de Servicio</a>
         </div>
-        <p>© 2025 - Unah Rate</p>
+        <p>© 2026 - Unah Rate</p>
     </footer>
 
     <!-- Firebase y app.js -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js" integrity="sha384-gNTK1b3nq+NMsDf1ASdhbVEwXj9tjBeobuvcjWGlmIffN9OP+Q0SU9Q10JKPZryT" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js" integrity="sha384-RCX4/afwL4rcvPna7SzxURYLlkH4PeSnyydnrIn/zzZyviOL3A9RZjNPvXunkiFD" crossorigin="anonymous"></script>
+    <script src="js/app.js"></script>
     <script src="js/navbar.js"></script>
-    <script>
-        // Redirige a reviews.html con el campus seleccionado
-        document.getElementById("searchCampusButton").addEventListener("click", () => {
-            const campus = document.getElementById("campusSelect").value;
-            window.location.href = `reviews.html?campus=${encodeURIComponent(campus)}`;
-        });
-    </script>
 </body>
 </html>

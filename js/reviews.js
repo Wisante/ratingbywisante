@@ -8,7 +8,7 @@ fetch('/.netlify/functions/getFirebaseConfig')
     const db = firebase.firestore();
 
 // En tu archivo reviews.js (al inicio)
-window.voteHelpful = function(reviewId, isHelpful) {
+const voteHelpful = function(reviewId, isHelpful) {
   const userId = localStorage.getItem("userId") || generateUserId();
   const votedReviews = JSON.parse(localStorage.getItem("votedReviews") || "[]");
   
@@ -26,7 +26,7 @@ window.voteHelpful = function(reviewId, isHelpful) {
   }).catch(error => console.error("Error al votar:", error));
 };
 
-window.reportReview = function(reviewId) {
+const reportReview = function(reviewId) {
   if (confirm("¿Reportar esta reseña?")) {
     db.collection("reviews").doc(reviewId).update({
       reported: true,
@@ -91,10 +91,10 @@ function loadReviews() {
                                 <p>${data.comment}</p>
                             </div>
                                 <div class="vote-buttons">
-                                    <button class="card-button" onclick="voteHelpful('${reviewId}', true)">
+                                    <button class="card-button" data-review-id="${reviewId}">
                                         👍 Útil (${data.helpfulCount || 0})
                                     </button>
-                                    <button class="card-report" onclick="reportReview('${reviewId}')">
+                                    <button class="card-report" data-review-id="${reviewId}">
                                         ⚠️ Reportar
                                     </button>
                                 </div>
@@ -266,13 +266,21 @@ function generateUserId() {
     return id;
 }
 
+// Event delegation para votar y reportar
 document.addEventListener('click', (e) => {
-  if (e.target.classList.contains('back-button')) {
-    e.preventDefault();
+  // Para botones de votar/reportar
+  const cardButton = e.target.closest('.card-button');
+  const cardReport = e.target.closest('.card-report');
+  
+  if (cardButton) voteHelpful(cardButton.dataset.reviewId, true);
+  if (cardReport) reportReview(cardReport.dataset.reviewId);
+
+  // Para el botón de volver
+  if (e.target.closest('.back-button')) {
     if (currentProfessors.length > 0) {
       displayProfessorsList(currentProfessors);
     } else {
-      loadReviews(); // O redirige a la página principal
+      loadReviews();
     }
   }
 });

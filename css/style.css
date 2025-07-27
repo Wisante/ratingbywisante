@@ -1,49 +1,116 @@
+html {
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+  }
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #d6eaff;
+    background: #dbebff;
+    background: linear-gradient(45deg, rgba(219, 235, 255, 1) 0%, rgba(229, 226, 255, 1) 50%, rgba(238, 219, 255, 1) 100%);
     color: #333;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-header {
-    background-color: #0a4b78; /* Azul UNAH */
-    color: white;
+.contenedor {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    gap: 3rem;
+    margin: 2rem;
     padding: 1rem;
-    text-align: center;
 }
 
-.banner {
-    position: relative;
-    background-image: url('../img/banner.png');
+.contenedor-txt {
+    flex-direction: column;
+    display: flex;
+    flex: 1;
+    align-items: flex-start;
+    justify-content: center;
+    max-width: 700px;
+}
+
+.contenedor-txt h1 {
+    color: #000000;
+    font-family: "Bebas Neue", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1.2;
+    margin: 0px;
+    text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.425);
+}
+
+.texto {
+    max-width: 600px;
+    font-size: clamp(1rem, 1.2vw, 2.5rem);
+}
+
+.welcome {
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 8px;
+    border-radius: 50px;
+    background-color: #dbebff;
+    color: #5762be;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.099);
+}
+
+.img {
+    background-image: url('../img/banner.webp');
     background-size: cover;
     background-position: center;
+    border: 5px solid white;
+    border-radius: 15px;
+    align-items: flex-end;
+    justify-content: end;
     height: 250px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    margin-bottom: 20px;
-}
-
-.banner::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
+    max-width: 400px;
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.137)
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.203);
 }
 
-.banner h2 {
-    position: relative;
-    font-size: 2.5em;
-    margin: 0;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+/* Media Queries para móviles */
+@media (max-width: 768px) {
+    .contenedor {
+        flex-direction: column;
+        text-align: center;
+        margin: 2rem 1rem;
+    }
+    
+    .contenedor-txt {
+        align-items: center;
+    }
+    
+    .img {
+        margin-top: 0px;
+        max-width: 400px;
+    }
+    
+
+}
+
+@media (max-width: 480px) {
+    .contenedor-txt h1 {
+        font-size: 2rem;
+    }
+    
+    .welcome {
+        font-size: 0.9rem;
+    }
 }
 
 .logo {
@@ -106,6 +173,7 @@ header {
 }
 
 .search-campus button, .search-faculty button {
+            margin: 10px 0;
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
@@ -140,17 +208,17 @@ header {
     --font-color-sub: #666;
     --bg-color: #fff;
     --main-color: #323232;
-    padding: 20px;
     background: lightgrey;
     flex-direction: column;
     justify-content: center;
     display: flex;
     gap: 20px;
-    border-radius: 5px;
+    border-radius: 10px;
     border: 2px solid var(--main-color);
     box-shadow: 4px 4px var(--main-color);
+    padding: 20px;
     max-width: 500px;
-    margin: 20px auto;
+    margin: 10px auto;
 }
 
 .title {
@@ -205,6 +273,28 @@ header {
 
 .form-group textarea {
     resize: vertical;
+}
+
+@media (max-width: 500px) {
+  .review-form {
+    margin: 20px 10px;
+  }
+
+
+  .form-group input, 
+  .form-group select, 
+  .form-group textarea {
+    width: 97%;
+  }
+  
+  .navbar-menu {
+    flex-direction: column;
+    display: none; /* Oculta el menú en móvil */
+  }
+  
+  .navbar-toggle {
+    display: block; /* Muestra el botón hamburguesa */
+  }
 }
 
 .no-results p {
@@ -382,12 +472,6 @@ header {
     width: 100%;
 }
 
-@media (max-width: 600px) {
-    .reviews-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
 .review-card {
     display: flex;
     flex-direction: column;
@@ -416,12 +500,6 @@ header {
     font-size: 1.1em;
 }
 
-@media (max-width: 768px) {
-    .professors-grid {
-        grid-template-columns: 1fr; /* 1 columna en móviles */
-    }
-}
-
 .review-card:hover {
  border-color: #008bf8;
  box-shadow: 0 4px 18px 0 rgba(0, 0, 0, 0.25);
@@ -444,13 +522,32 @@ header {
     padding: 20px;
 }
 
+/* En tu archivo CSS existente */
+@media (max-width: 768px) {
+  .professors-grid, .reviews-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .professor-card, .review-card {
+    padding: 1rem;
+    margin: 0.5rem 0;
+  }
+  
+  .search, .search-professor, .search-campus, .search-faculty {
+    width: 300px;
+  }
+}
+
 .vote-buttons {
+    flex-wrap: wrap;
     margin-top: auto;
     text-align: center;
     gap: 10px;
 }
 
 .vote-buttons .card-button {
+    min-width: 120px;
+    margin: 0.3rem;
     padding: 5px 10px;
     font-size: 14px;
     background-color: #0a4b78;
@@ -481,8 +578,8 @@ header {
 footer {
     text-align: center;
     padding: 20px 0;
-    background: #007bff;
-    color: white;
+    background: #f7f7f7;
+    color: rgb(0, 0, 0);
     position: relative;
     bottom: 0px;
     width: 100%;
@@ -494,7 +591,7 @@ footer {
 }
 
 .footer-links a {
-    color: white;
+    color: rgb(7, 7, 7);
     margin: 0 10px;
     text-decoration: none;
 }
