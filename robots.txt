@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://unahrate.netlify.app/sitemap.xml

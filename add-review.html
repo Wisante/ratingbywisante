@@ -2,7 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Agregar Reseña - UNAH</title>
+    <title>UNAH Rate - Agrega tu reseña</title>
+    <meta name="description" content="Comparte tu experiencia con profesores de la UNAH. Tu opinión ayuda a otros estudiantes a elegir los mejores docentes. ¡Califica ahora de forma anónima!">
+    <meta name="keywords" content="agregar reseña UNAH, calificar profesores Honduras, opiniones docentes UNAH, evaluación profesores universidad">
+    <meta property="og:title" content="UnahRate | Agrega tu Reseña de Profesores de la UNAH">
+    <meta property="og:description" content="Comparte tu experiencia académica y ayuda a la comunidad universitaria con tus opiniones honestas">
+    <meta property="og:url" content="https://unahrate.netlify.app/add-review.html">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,13 +16,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/navbar.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ReviewAction",
+  "description": "Formulario para evaluar profesores UNAH",
+  "object": {
+    "@type": "EducationalOrganization",
+    "name": "Universidad Nacional Autónoma de Honduras"
+  }
+}
+</script>
 </head>
 <body>
     <nav class="navbar">
     <div class="navbar-container">
         <!-- Logo UNAH (opcional) -->
         <a href="index.html" class="navbar-logo">
-            <img src="img/unahrate-logo.webp" alt="UNAH" width="40">
+            <img src="img/unahrate-logo.webp" loading="lazy" alt="UNAH" width="40">
             <span>UnahRate</span>
         </a>
         
@@ -108,7 +124,7 @@
             <a href="privacy.html">Política de Privacidad</a>
             <a href="terms.html">Términos de Servicio</a>
         </div>
-        <p>© 2025 - Unah Rate</p>
+        <p>© 2025 - Unah Rate - Pagina no afiliada a la UNAH</p>
     </footer>
 
     <!-- Firebase y lógica -->
