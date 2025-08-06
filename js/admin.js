@@ -8,7 +8,7 @@ fetch('/.netlify/functions/getFirebaseConfig')
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-window.deleteReview = async (reviewId) => {
+const deleteReview = async (reviewId) => {
   try {
     if (!confirm("¿Eliminar reseña?")) return;
     await db.collection("reviews").doc(reviewId).delete();
@@ -19,7 +19,7 @@ window.deleteReview = async (reviewId) => {
   }
 };
 
-window.approveReview = async (reviewId) => {
+const approveReview = async (reviewId) => {
   try {
     await db.collection("reviews").doc(reviewId).update({ reported: false });
     loadReportedReviews();
@@ -61,16 +61,23 @@ function loadReportedReviews() {
             }
 
             querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                container.innerHTML += `
-                    <div class="review-item" data-id="${doc.id}">
-                        <p><strong>${data.professor}</strong> - ${data.course}</p>
-                        <p>${data.comment}</p>
-                        <small>Reportado el: ${data.reportedAt?.toDate().toLocaleString() || "Fecha desconocida"}</small>
-                        <button id="deleteButton" onclick="deleteReview('${doc.id}')">Eliminar</button>
-                        <button id="approveButton" onclick="approveReview('${doc.id}')">Aprobar</button>
-                    </div>
+                const reviewItem = document.createElement("div");
+                reviewItem.className = "review-item";
+                reviewItem.dataset.id = doc.id;
+                
+                reviewItem.innerHTML = `
+                    <p><strong>${doc.data().professor}</strong> - ${doc.data().course}</p>
+                    <p>${doc.data().comment}</p>
+                    <small>Reportado el: ${doc.data().reportedAt?.toDate().toLocaleString() || "Fecha desconocida"}</small>
+                    <button class="delete-button">Eliminar</button>
+                    <button class="approve-button">Aprobar</button>
                 `;
+                
+                // Agrega event listeners aquí
+                reviewItem.querySelector('.delete-button').addEventListener('click', () => deleteReview(doc.id));
+                reviewItem.querySelector('.approve-button').addEventListener('click', () => approveReview(doc.id));
+                
+                container.appendChild(reviewItem);
             });
         }, (error) => {
             console.error("Error al cargar reseñas:", error);

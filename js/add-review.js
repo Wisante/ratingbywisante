@@ -46,7 +46,7 @@ if (!professorName || professorName.length < 2 || professorName.length > 50) {
     })
     .then(() => {
         alert("¡Reseña enviada con éxito!");
-        window.location.href = "index.html";
+        window.location.href = "reviews.html";
     })
     .catch((error) => {
         console.error("Error al enviar:", error);

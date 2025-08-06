@@ -10,7 +10,7 @@
       default-src 'self';
       base-uri 'self';
       form-action 'self';
-      script-src 'self' 'sha384-xUYr75T+QT8UYrpPWrZk5+pt6KJsUrjRnBZhTeIZz8K7WwIPF9l7duqoZCw7bWhJ' https://www.googletagmanager.com https://www.google-analytics.com https://www.gstatic.com https://apis.google.com;
+      script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://www.gstatic.com https://apis.google.com;
       script-src-elem 'self' https://www.googletagmanager.com https://www.google-analytics.com https://www.gstatic.com https://apis.google.com;
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
       style-src-elem 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com;

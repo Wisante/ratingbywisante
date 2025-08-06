@@ -7,7 +7,7 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-input, #loginButton, #logoutButton, #approveButton, #deleteButton {
+input, #loginButton, #logoutButton, .approveButton, .deleteButton {
     width: 100%;
     padding: 10px;
     margin: 8px 0;
@@ -15,7 +15,7 @@ input, #loginButton, #logoutButton, #approveButton, #deleteButton {
     border-radius: 4px;
 }
 
-#loginButton, #logoutButton, #approveButton, #deleteButton {
+#loginButton, #logoutButton, .approveButton, .deleteButton {
     background-color: #0a4b78;
     color: white;
     cursor: pointer;
