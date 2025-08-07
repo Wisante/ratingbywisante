@@ -29,6 +29,15 @@
 </script>
 </head>
 <body>
+    <script>
+      firebase.auth().onAuthStateChanged((user) => {
+        if (!user) {
+          window.location.href = '/auth/login.html';
+        }
+      });
+    </script>
+
+
     <nav class="navbar">
     <div class="navbar-container">
         <!-- Logo UNAH (opcional) -->

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - UnahRate</title>
+    <link rel="stylesheet" href="../css/auth.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="logo">
+            <img src="../img/unahrate-logo.webp" width="40px" alt="Logo UNAH">
+            <h1>Crear Cuenta</h1>
+        </div>
+
+        <form id="registerForm" class="auth-form">
+            <div class="input-group">
+                <span class="material-icons">person</span>
+                <input type="text" id="displayName" placeholder="Nombre completo" required>
+            </div>
+
+            <div class="input-group">
+                <span class="material-icons">mail</span>
+                <input type="email" id="email" placeholder="correo@unah.hn" required>
+            </div>
+            
+            <div class="input-group">
+                <span class="material-icons">lock</span>
+                <input type="password" id="password" placeholder="Contraseña (mínimo 8 caracteres)" required>
+            </div>
+
+            <div class="input-group">
+                <span class="material-icons">lock</span>
+                <input type="password" id="confirmPassword" placeholder="Confirmar contraseña" required>
+            </div>
+
+            <div class="terms">
+                <input type="checkbox" id="termsCheckbox" required>
+                <label for="termsCheckbox">Acepto los <a href="../terms.html">Términos de servicio</a> y <a href="../privacy.html">Política de privacidad</a></label>
+            </div>
+
+            <button type="submit" class="btn-primary">Registrarme</button>
+        </form>
+
+        <div class="separator">o regístrate con</div>
+
+        <button id="googleRegister" class="btn-google">
+            <img src="../img/google-icon.png" alt="Google Logo">
+            Registrarse con Google
+        </button>
+
+        <div class="auth-links">
+            <a href="login.html">¿Ya tienes cuenta? Inicia sesión</a>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="../js/auth/authConfig.js"></script>
+    <script src="../js/auth/register.js"></script>
+</body>
+</html>

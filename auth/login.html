@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - UnahRate</title>
+    <link rel="stylesheet" href="../css/auth.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="logo">
+            <img src="../img/unahrate-logo.webp" width="40px" alt="Logo UNAH">
+            <h1>UnahRate</h1>
+        </div>
+
+        <form id="loginForm" class="auth-form">
+            <div class="input-group">
+                <span class="material-icons">mail</span>
+                <input type="email" id="email" placeholder="correo@unah.hn" required>
+            </div>
+            
+            <div class="input-group">
+                <span class="material-icons">lock</span>
+                <input type="password" id="password" placeholder="Contraseña" required>
+            </div>
+
+            <button type="submit" class="btn-primary">Iniciar Sesión</button>
+        </form>
+
+        <div class="separator">o continúa con</div>
+
+        <button id="googleLogin" class="btn-google">
+            <img src="../img/google-icon.png" alt="Google Logo">
+            Iniciar con Google
+        </button>
+
+        <div class="auth-links">
+            <a href="forgot-password.html">¿Olvidaste tu contraseña?</a>
+            <a href="register.html">¿No tienes cuenta? Regístrate</a>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="../js/auth/authConfig.js"></script>
+    <script src="../js/auth/login.js"></script>
+</body>
+</html>

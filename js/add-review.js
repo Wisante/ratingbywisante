@@ -26,6 +26,23 @@ document.getElementById("reviewForm").addEventListener("submit", async (e) => {
     const comment = sanitizeInput(document.getElementById("comment").value);
     const professorId = generateProfessorId(professorName);
 
+    const user = firebase.auth().currentUser;
+    if (!user) return window.location.href = '/auth/login.html';
+
+    // 1. Verificar límite de reseñas
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const userReviews = await db.collection('reviews')
+        .where('userId', '==', user.uid)
+        .where('date', '>=', today)
+        .get();
+
+    if (userReviews.size >= 3) {
+        alert('¡Límite alcanzado! Solo puedes publicar 3 reseñas por día.');
+        return;
+    }
+
 // En add-review.js
 if (!professorName || professorName.length < 2 || professorName.length > 50) {
   alert("El nombre del profesor debe tener entre 2 y 50 caracteres");
