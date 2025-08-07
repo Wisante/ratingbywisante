@@ -8,6 +8,41 @@ fetch('/.netlify/functions/getFirebaseConfig')
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+// Verificar admin al cargar la página
+firebase.auth().onAuthStateChanged(async (user) => {
+  if (!user) {
+    window.location.href = '/auth/login.html';
+    return;
+  }
+
+  // Obtener lista de admins desde Netlify (vía función serverless)
+  const isAdmin = await checkAdminStatus(user.email);
+  
+  if (!isAdmin) {
+    alert('Acceso denegado: No tienes permisos de administrador');
+    window.location.href = '/index.html';
+    return;
+  }
+
+  // Cargar contenido del panel solo si es admin
+  loadAdminPanel();
+});
+
+// Función para verificar correo admin
+async function checkAdminStatus(email) {
+  try {
+    const response = await fetch('/.netlify/functions/checkAdmin', {
+      method: 'POST',
+      body: JSON.stringify({ email: email })
+    });
+    const data = await response.json();
+    return data.isAdmin;
+  } catch (error) {
+    console.error("Error verificando admin:", error);
+    return false;
+  }
+}
+
 const deleteReview = async (reviewId) => {
   try {
     if (!confirm("¿Eliminar reseña?")) return;
@@ -89,15 +124,6 @@ function loadReportedReviews() {
 document.getElementById("logoutButton").addEventListener("click", () => {
     auth.signOut()
         .then(() => location.reload());
-});
-
-// Verificar autenticación al cargar
-auth.onAuthStateChanged((user) => {
-    if (user) {
-        document.getElementById("loginForm").style.display = "none";
-        document.getElementById("adminPanel").style.display = "block";
-        loadReportedReviews();
-    }
 });
 
   })

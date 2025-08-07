@@ -26,22 +26,15 @@ document.getElementById("reviewForm").addEventListener("submit", async (e) => {
     const comment = sanitizeInput(document.getElementById("comment").value);
     const professorId = generateProfessorId(professorName);
 
-    const user = firebase.auth().currentUser;
-    if (!user) return window.location.href = '/auth/login.html';
+  const user = firebase.auth().currentUser;
+  if (!user) return window.location.href = '/auth/login.html';
 
-    // 1. Verificar límite de reseñas
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    const userReviews = await db.collection('reviews')
-        .where('userId', '==', user.uid)
-        .where('date', '>=', today)
-        .get();
-
-    if (userReviews.size >= 3) {
-        alert('¡Límite alcanzado! Solo puedes publicar 3 reseñas por día.');
-        return;
-    }
+  // Verificar límite de 3 reseñas/día (usando función helper)
+  const reviewsToday = await checkDailyLimit(user.uid);
+  if (reviewsToday >= 3) {
+    alert('Límite de 3 reseñas por día alcanzado');
+    return;
+  }
 
 // En add-review.js
 if (!professorName || professorName.length < 2 || professorName.length > 50) {
@@ -58,6 +51,7 @@ if (!professorName || professorName.length < 2 || professorName.length > 50) {
         rating: parseInt(rating),
         comment: comment,
         date: new Date(),
+        userId: user.uid,
         helpfulCount: 0, // Inicializar votos útiles
         reported: false // Por defecto no reportado
     })
@@ -70,6 +64,19 @@ if (!professorName || professorName.length < 2 || professorName.length > 50) {
         alert("Ocurrió un error. Intenta nuevamente.");
     });
 });
+
+// Función para verificar límite diario
+async function checkDailyLimit(userId) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const snapshot = await db.collection('reviews')
+    .where('userId', '==', userId)
+    .where('date', '>=', today)
+    .get();
+
+  return snapshot.size;
+}
 
   })
   .catch(error => console.error("Error loading Firebase config:", error));

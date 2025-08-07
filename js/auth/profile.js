@@ -1,10 +1,3 @@
-// En profile.html, add-review.html, etc.
-auth.onAuthStateChanged((user) => {
-    if (!user) {
-        window.location.href = '/auth/login.html';
-    }
-});
-
 auth.onAuthStateChanged((user) => {
     if (!user) {
         window.location.href = 'login.html';

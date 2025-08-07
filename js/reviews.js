@@ -7,24 +7,31 @@ fetch('/.netlify/functions/getFirebaseConfig')
     
     const db = firebase.firestore();
 
-// En tu archivo reviews.js (al inicio)
-const voteHelpful = function(reviewId, isHelpful) {
-  const userId = localStorage.getItem("userId") || generateUserId();
-  const votedReviews = JSON.parse(localStorage.getItem("votedReviews") || "[]");
-  
-  if (votedReviews.includes(reviewId)) {
-    alert("Ya votaste esta reseña");
+async function voteHelpful(reviewId) {
+  const user = firebase.auth().currentUser;
+  if (!user) return window.location.href = '/auth/login.html';
+
+  // Verificar si ya votó (ahora en Firestore, no localStorage)
+  const voteRef = db.collection('votes').doc(`${user.uid}_${reviewId}`);
+  const voteDoc = await voteRef.get();
+
+  if (voteDoc.exists) {
+    alert('Ya votaste esta reseña');
     return;
   }
 
-  db.collection("reviews").doc(reviewId).update({
+  // Registrar voto
+  await voteRef.set({
+    userId: user.uid,
+    reviewId: reviewId,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  // Actualizar contador
+  await db.collection('reviews').doc(reviewId).update({
     helpfulCount: firebase.firestore.FieldValue.increment(1)
-  }).then(() => {
-    votedReviews.push(reviewId);
-    localStorage.setItem("votedReviews", JSON.stringify(votedReviews));
-    loadReviews();
-  }).catch(error => console.error("Error al votar:", error));
-};
+  });
+}
 
 const reportReview = function(reviewId) {
   if (confirm("¿Reportar esta reseña?")) {
