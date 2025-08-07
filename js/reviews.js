@@ -37,11 +37,17 @@ const reportReview = function(reviewId) {
 
 // Obtener parámetro de URL (ej: reviews.html?campus=Tegucigalpa)
 const urlParams = new URLSearchParams(window.location.search);
-const campus = urlParams.get('campus');
+const searchProfessor = urlParams.get('professor')?.toLowerCase() || '';
+const searchCampus = urlParams.get('campus') || '';
 
 // Mostrar título contextual
 document.getElementById("pageTitle").textContent = 
-    campus ? `Reseñas - Campus ${campus}` : "Todas las Reseñas";
+    searchCampus ? `Reseñas - Campus ${searchCampus}` : "Todas las Reseñas";
+
+// Cargar reseñas al iniciar
+document.addEventListener('DOMContentLoaded', () => {
+    loadReviews();
+});
 
 // Cargar reseñas filtradas
 function loadReviews() {
@@ -57,6 +63,34 @@ function loadReviews() {
                 container.innerHTML = "<p>No hay reseñas disponibles.</p>";
                 return;
             }
+
+    let query = db.collection("reviews").orderBy("date", "desc");
+
+    query.get()
+        .then((querySnapshot) => {
+            // Filtrar resultados si hay parámetros de búsqueda
+            const filteredDocs = searchProfessor || searchCampus ? 
+                querySnapshot.docs.filter(doc => {
+                    const data = doc.data();
+                    const matchesProfessor = searchProfessor ? 
+                        data.professor.toLowerCase().includes(searchProfessor) : true;
+                    const matchesCampus = searchCampus ? 
+                        data.campus === searchCampus : true;
+                    return matchesProfessor && matchesCampus;
+                }) : 
+                querySnapshot.docs;
+
+            displayReviews(filteredDocs);
+        })
+        .catch((error) => {
+            console.error("Error al cargar reseñas:", error);
+            container.innerHTML = `
+                <div class="error">
+                    <p>Error al cargar reseñas</p>
+                    <small>${error.message}</small>
+                </div>
+            `;
+        });
 
             // Agrupar por profesor (opcional, si quieres mantener la estructura)
             const professorsMap = new Map();
@@ -92,10 +126,10 @@ function loadReviews() {
                             </div>
                                 <div class="vote-buttons">
                                     <button class="card-button" data-review-id="${reviewId}">
-                                        👍 Útil (${data.helpfulCount || 0})
+                                        <i class="fa-regular fa-thumbs-up"></i> Útil (${data.helpfulCount || 0})
                                     </button>
                                     <button class="card-report" data-review-id="${reviewId}">
-                                        ⚠️ Reportar
+                                        <i class="fa-regular fa-flag"></i> Reportar
                                     </button>
                                 </div>
                             </div>
@@ -108,6 +142,48 @@ function loadReviews() {
             console.error("Error al cargar reseñas:", error);
             container.innerHTML = `<p class="error">Error al cargar reseñas: ${error.message}</p>`;
         });
+}
+
+// Nueva función para mostrar resultados
+function displayReviews(reviews) {
+  const container = document.getElementById("reviewsList");
+  
+  if (reviews.length === 0) {
+    container.innerHTML = `
+      <div class="no-results">
+        <p>No se encontraron reseñas</p>
+        ${searchProfessor ? `<p>para el profesor: <strong>${searchProfessor}</strong></p>` : ''}
+        ${searchCampus ? `<p>en el campus: <strong>${searchCampus}</strong></p>` : ''}
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="reviews-grid">
+      ${reviews.map(doc => {
+        const data = doc.data();
+        const reviewId = doc.id;
+        return `
+        <div class="review-card">
+        <div class="review-content">
+            <h4>${data.professor} <small>(${data.faculty} • ${data.campus}) - ${data.date.toDate().toLocaleDateString()}</small></h4>
+            <p><strong>${data.course}</strong> | <span class="stars">${"★".repeat(data.rating)}</span>${"☆".repeat(5 - data.rating)}</p>
+            <p>${data.comment}</p>
+        </div>
+        <div class="vote-buttons">
+            <button class="card-button" data-review-id="${reviewId}">
+                <i class="fa-regular fa-thumbs-up"></i> Útil (${data.helpfulCount || 0})
+            </button>
+            <button class="card-report" data-review-id="${reviewId}">
+                <i class="fa-regular fa-flag"></i> Reportar
+            </button>
+        </div>
+        </div>
+        `;
+      }).join('')}
+    </div>
+  `;
 }
 
 let currentProfessors = [];
@@ -199,10 +275,10 @@ function displayProfessorProfile(professor) {
 
                                 <div class="vote-buttons">
                                     <button class="card-button" onclick="voteHelpful('${review.id}', true)">
-                                        👍 Útil (${review.helpfulCount || 0})
+                                        <i class="fa-regular fa-thumbs-up"></i> Útil (${review.helpfulCount || 0})
                                     </button>
                                     <button class="card-report" onclick="reportReview('${review.id}')">
-                                        ⚠️ Reportar
+                                        <i class="fa-regular fa-flag"></i> Reportar
                                     </button>
                                 </div>
                             </div>

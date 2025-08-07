@@ -1,6 +1,17 @@
-document.getElementById("searchCampusButton").addEventListener("click", () => {
+document.getElementById("searchButton").addEventListener("click", () => {
+  const professor = document.getElementById("searchInput").value.trim();
   const campus = document.getElementById("campusSelect").value;
-  window.location.href = `reviews.html?campus=${encodeURIComponent(campus)}`;
+  
+  // Construye la URL con parámetros
+  let url = 'reviews.html';
+  if (professor || campus) {
+    url += '?';
+    if (professor) url += `professor=${encodeURIComponent(professor)}`;
+    if (professor && campus) url += '&';
+    if (campus) url += `campus=${encodeURIComponent(campus)}`;
+  }
+  
+  window.location.href = url;
 });
 
 document.addEventListener('click', (e) => {
