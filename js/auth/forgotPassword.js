@@ -1,3 +1,5 @@
+import { auth } from '../../auth/authConfig.js';
+
 document.getElementById('forgotPasswordForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('email').value;

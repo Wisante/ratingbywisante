@@ -1,3 +1,7 @@
+import { auth } from '../../auth/authConfig.js';
+import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js';
+import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
+
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -25,7 +29,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
 
     try {
         // Crear usuario
-        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         
         // Actualizar perfil
         await userCredential.user.updateProfile({
@@ -33,10 +37,10 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         });
 
         // Guardar datos adicionales en Firestore
-        await firebase.firestore().collection('users').doc(userCredential.user.uid).set({
+        await setDoc(doc(db, "users", userCredential.user.uid), {
             displayName: displayName,
             email: email,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            createdAt: new Date(),
             role: 'estudiante',
             avatarUrl: '../img/default-avatar.png'
         });

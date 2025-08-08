@@ -1,10 +1,11 @@
-fetch('/.netlify/functions/getFirebaseConfig')
-  .then(response => response.json())
-  .then(config => {
-    if (!firebase.apps.length) {
-      firebase.initializeApp(config);
-    }
-const auth = firebase.auth();
-const db = firebase.firestore();
-  })
-  .catch(error => console.error("Error loading Firebase config:", error));
+let auth, db;
+const firebaseConfig = await fetch('/.netlify/functions/getFirebaseConfig')
+  .then(response => response.json());
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+auth = firebase.auth();
+db = firebase.firestore();
+
+export { auth, db };

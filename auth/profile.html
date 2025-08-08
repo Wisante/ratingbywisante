@@ -8,15 +8,6 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-    <script>
-      firebase.auth().onAuthStateChanged((user) => {
-        if (!user) {
-          window.location.href = '/auth/login.html';
-        }
-      });
-    </script>
-
-
     <nav class="navbar">
         <a href="../index.html" class="back-button">
             <span class="material-icons">arrow_back</span>
@@ -55,7 +46,8 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="../js/auth/authConfig.js"></script>
+    <script type="module" src="/js/auth/authConfig.js"></script>
     <script src="../js/auth/profile.js"></script>
+    <script src="/js/auth/authCheck.js"></script>
 </body>
 </html>

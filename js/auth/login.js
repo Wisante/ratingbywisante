@@ -1,3 +1,6 @@
+import { auth } from '../../auth/authConfig.js';
+import { GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js';
+
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -19,21 +22,10 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     }
 });
 
-const googleProvider = new firebase.auth.GoogleAuthProvider();
+const provider = new GoogleAuthProvider();
 
 document.getElementById('googleLogin').addEventListener('click', () => {
-    firebase.auth().signInWithPopup(googleProvider)
-        .then((result) => {
-            // Verificar dominio si es requerido
-            if (result.user.email.endsWith('@unah.hn')) {
-                window.location.href = '../index.html';
-            } else {
-                firebase.auth().signOut();
-                alert('Solo correos @unah.hn permitidos');
-            }
-        })
-        .catch((error) => {
-            console.error("Error en Google Sign-In:", error);
-            alert(error.message);
-        });
+  signInWithPopup(auth, provider)
+    .then(() => window.location.href = '/profile.html')
+    .catch(error => console.error("Google Sign-In Error:", error));
 });

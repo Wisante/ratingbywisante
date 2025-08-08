@@ -1,3 +1,5 @@
+import { auth, db } from '../../auth/authConfig.js';
+
 auth.onAuthStateChanged((user) => {
     if (!user) {
         window.location.href = 'login.html';
