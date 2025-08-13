@@ -284,11 +284,12 @@ document.getElementById("searchButton").addEventListener("click", async () => {
         return;
     }
 
+    let professorsMap = new Map();
+
     try {
         const snapshot = await query.get();
 
         // Procesar resultados
-        const professorsMap = new Map();
         snapshot.docs.forEach(doc => {
             const data = doc.data();
             const professorKey = data.professorId || data.professor.toLowerCase();
