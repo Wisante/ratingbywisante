@@ -334,19 +334,32 @@ function generateUserId() {
 
 // Event delegation para votar y reportar
 document.addEventListener('click', (e) => {
-  // Para botones de votar/reportar
-  const cardButton = e.target.closest('.card-button');
-  const cardReport = e.target.closest('.card-report');
-  
-  if (cardButton) voteHelpful(cardButton.dataset.reviewId, true);
-  if (cardReport) reportReview(cardReport.dataset.reviewId);
+  const target = e.target;
 
-  // Para el botón de volver
-  if (e.target.closest('.back-button')) {
+  // Manejar clics en los botones de acción
+  const actionButton = target.closest('[data-action]') || target.closest('.card-button') || target.closest('.card-report') || target.closest('.view-button');
+  if (!actionButton) return;
+
+  const action = actionButton.dataset.action;
+  const reviewId = actionButton.closest('.review-card')?.dataset.reviewId || actionButton.dataset.reviewId;
+  const professorId = actionButton.closest('.professor-item')?.dataset.id;
+
+  if (action === 'add-review') {
+    window.location.href = 'add-review.html';
+  } else if (actionButton.matches('.card-button') && reviewId) {
+    voteHelpful(reviewId, true);
+  } else if (actionButton.matches('.card-report') && reviewId) {
+    reportReview(reviewId);
+  } else if (actionButton.matches('.view-button') && professorId) {
+    const professor = currentProfessors.find(p => p.id === professorId);
+    if (professor) {
+        displayProfessorProfile(professor);
+    }
+  } else if (action === 'back') {
     if (currentProfessors.length > 0) {
-      displayProfessorsList(currentProfessors);
+        displayProfessorsList(currentProfessors);
     } else {
-      loadReviews();
+        loadReviews();
     }
   }
 });
