@@ -1,4 +1,4 @@
-import { auth } from './authConfig.js';
+import { initializeFirebase } from './authConfig.js';
 import { renderNavbar, attachNavbarListeners } from '../navbar.js';
 import { checkAdminStatus } from '../utils.js';
 
@@ -22,5 +22,11 @@ async function updateNavbarForAuthState(user) {
     attachNavbarListeners();
 }
 
-// Listen for authentication state changes
-auth.onAuthStateChanged(updateNavbarForAuthState);
+// Initialize Firebase and then listen for auth changes
+initializeFirebase()
+    .then(({ auth }) => {
+        auth.onAuthStateChanged(updateNavbarForAuthState);
+    })
+    .catch(error => {
+        console.error("Failed to initialize Firebase for auth manager.", error);
+    });

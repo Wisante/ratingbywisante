@@ -1,4 +1,4 @@
-import { initFirebase, auth, db } from './authConfig.js';
+import { initializeFirebase } from './authConfig.js';
 
 // Elementos del DOM
 const userPhoto = document.getElementById('userPhoto');
@@ -16,49 +16,53 @@ const closeModal = document.querySelector('.close-modal');
 const passwordForm = document.getElementById('passwordForm');
 
 // Cargar datos del usuario
-initFirebase().then(() => {
-auth.onAuthStateChanged(async (user) => {
-    if (!user) {
-        window.location.href = 'login.html';
-        return;
-    }
-
-    // Datos básicos
-    userEmail.textContent = user.email;
-    
-    // Obtener datos adicionales de Firestore
-    const userDoc = await db.collection('users').doc(user.uid).get();
-    if (userDoc.exists) {
-        const userData = userDoc.data();
-        
-        // Mostrar datos
-        userName.textContent = userData.displayName || 'Usuario UNAH';
-        userPhoto.src = userData.photoURL || '../img/default-avatar.png';
-        
-        // Formatear fecha de registro
-        if (userData.createdAt) {
-            const joinDate = userData.createdAt.toDate();
-            memberSince.textContent = `Miembro desde ${joinDate.getFullYear()}`;
+initializeFirebase().then(({ auth, db }) => {
+    auth.onAuthStateChanged(async (user) => {
+        if (!user) {
+            window.location.href = 'login.html';
+            return;
         }
-        
-        // Estadísticas
-        reviewsCount.textContent = userData.reviewsCount || 0;
-    }
 
-    // Cargar reseñas del usuario
-    loadUserReviews(user.uid);
-});
+        // Datos básicos
+        userEmail.textContent = user.email;
+        
+        // Obtener datos adicionales de Firestore
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+
+            // Mostrar datos
+            userName.textContent = userData.displayName || 'Usuario UNAH';
+            userPhoto.src = userData.photoURL || '../img/default-avatar.png';
+
+            // Formatear fecha de registro
+            if (userData.createdAt) {
+                const joinDate = userData.createdAt.toDate();
+                memberSince.textContent = `Miembro desde ${joinDate.getFullYear()}`;
+            }
+
+            // Estadísticas
+            reviewsCount.textContent = userData.reviewsCount || 0;
+        }
+
+        // Cargar reseñas del usuario
+        loadUserReviews(db, user.uid);
+    });
+
+    // Attach listeners that need auth and db
+    setupEventListeners(auth, db);
+
 }).catch(error => {
     console.error("Error initializing Firebase:", error);
-    window.location.href = 'error.html'; // Redirige a página de error
+    // Consider showing an error message on the page instead of redirecting
 });
 
 // Cargar reseñas del usuario
-async function loadUserReviews(userId) {
+async function loadUserReviews(db, userId) {
     try {
         const querySnapshot = await db.collection('reviews')
             .where('userId', '==', userId)
-            .orderBy('createdAt', 'desc')
+            .orderBy('date', 'desc') // Assuming 'date' field exists from review creation
             .limit(5)
             .get();
 
@@ -105,66 +109,63 @@ async function loadUserReviews(userId) {
     }
 }
 
-// Cambiar contraseña
-changePasswordBtn.addEventListener('click', () => {
-    passwordModal.style.display = 'flex';
-});
-
-closeModal.addEventListener('click', () => {
-    passwordModal.style.display = 'none';
-});
-
-passwordForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const currentPassword = document.getElementById('currentPassword').value;
-    const newPassword = document.getElementById('newPassword').value;
-    const confirmNewPassword = document.getElementById('confirmNewPassword').value;
-
-    // Validaciones
-    if (newPassword !== confirmNewPassword) {
-        alert('Las contraseñas no coinciden');
-        return;
-    }
-
-    if (newPassword.length < 8) {
-        alert('La contraseña debe tener al menos 8 caracteres');
-        return;
-    }
-
-    try {
-        const user = auth.currentUser;
-        const credential = firebase.auth.EmailAuthProvider.credential(
-            user.email, 
-            currentPassword
-        );
-        
-        // Reautenticar
-        await user.reauthenticateWithCredential(credential);
-        
-        // Cambiar contraseña
-        await user.updatePassword(newPassword);
-        
-        alert('¡Contraseña actualizada con éxito!');
-        passwordModal.style.display = 'none';
-        passwordForm.reset();
-        
-    } catch (error) {
-        console.error("Error cambiando contraseña:", error);
-        alert(error.message);
-    }
-});
-
-// Cerrar sesión
-logoutBtn.addEventListener('click', () => {
-    auth.signOut().then(() => {
-        window.location.href = 'login.html';
+function setupEventListeners(auth, db) {
+    // Cambiar contraseña
+    changePasswordBtn.addEventListener('click', () => {
+        passwordModal.style.display = 'flex';
     });
-});
 
-// Cerrar modal al hacer clic fuera
-window.addEventListener('click', (e) => {
-    if (e.target === passwordModal) {
+    closeModal.addEventListener('click', () => {
         passwordModal.style.display = 'none';
-    }
-});
+    });
+
+    passwordForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+        if (newPassword !== confirmNewPassword) {
+            return alert('Las contraseñas no coinciden');
+        }
+        if (newPassword.length < 8) {
+            return alert('La contraseña debe tener al menos 8 caracteres');
+        }
+
+        try {
+            const user = auth.currentUser;
+            if (!user) throw new Error("No user is signed in.");
+
+            const credential = firebase.auth.EmailAuthProvider.credential(
+                user.email,
+                currentPassword
+            );
+
+            await user.reauthenticateWithCredential(credential);
+            await user.updatePassword(newPassword);
+
+            alert('¡Contraseña actualizada con éxito!');
+            passwordModal.style.display = 'none';
+            passwordForm.reset();
+
+        } catch (error) {
+            console.error("Error cambiando contraseña:", error);
+            alert(error.message);
+        }
+    });
+
+    // Cerrar sesión
+    logoutBtn.addEventListener('click', () => {
+        auth.signOut().then(() => {
+            window.location.href = 'login.html';
+        });
+    });
+
+    // Cerrar modal al hacer clic fuera
+    window.addEventListener('click', (e) => {
+        if (e.target === passwordModal) {
+            passwordModal.style.display = 'none';
+        }
+    });
+}
