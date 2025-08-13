@@ -7,21 +7,13 @@
 export function renderNavbar(user, isAdmin) {
     const adminLink = isAdmin ? `<li><a href="/admin.html"><i class="fa-solid fa-screwdriver-wrench"></i> Moderación</a></li>` : '';
 
-    let authSection;
+    let authLink;
     if (user) {
-        // User is logged in, show Profile link
-        authSection = `
-            <ul class="navbar-menu auth-links">
-                <li><a href="/auth/profile.html"><i class="fas fa-user"></i> Perfil</a></li>
-            </ul>
-        `;
+        // User is logged in, create Profile list item
+        authLink = `<li><a href="/auth/profile.html"><i class="fas fa-user"></i> Perfil</a></li>`;
     } else {
-        // User is logged out, show Login button
-        authSection = `
-            <div id="auth-container">
-                <a href="/auth/login.html" class="button" id="login-button">Iniciar Sesión</a>
-            </div>
-        `;
+        // User is logged out, create Login list item styled as a button
+        authLink = `<li><a href="/auth/login.html" class="button" id="login-button">Iniciar Sesión</a></li>`;
     }
 
     const navHTML = `
@@ -37,9 +29,8 @@ export function renderNavbar(user, isAdmin) {
                     <li><a href="/reviews.html"><i class="fa-solid fa-rectangle-list"></i> Reseñas</a></li>
                     <li><a href="/add-review.html"><i class="fas fa-user-edit"></i> Agregar Reseña</a></li>
                     ${adminLink}
+                    ${authLink}
                 </ul>
-
-                ${authSection}
 
                 <button class="navbar-toggle" aria-label="Menú">
                     <i class="fa-solid fa-bars"></i>
