@@ -14,30 +14,11 @@
     <link rel="stylesheet" href="css/navbar.css?v=1">
 </head>
 <body>
-<script>
-  // Bloquear acceso mientras se verifica
-  document.addEventListener('DOMContentLoaded', () => {
-    document.body.innerHTML = `
-      <div class="admin-loading">
-        <h2>Verificando permisos...</h2>
-      </div>
-    `;
-  });
-</script>
-    <script>
-      firebase.auth().onAuthStateChanged((user) => {
-        if (!user) {
-          window.location.href = '/auth/login.html';
-        }
-      });
-    </script>
-
-
     <nav class="navbar">
     <div class="navbar-container">
         <!-- Logo UNAH (opcional) -->
         <a href="index.html" class="navbar-logo">
-            <img src="img/unahrate-logo.webp" loading="lazy" width="40" style="background: #f1f1f1;" alt="Unah Rate Logo">
+            <img src="img/unahrate-logo.webp" loading="lazy" width="40" class="navbar-logo-img" alt="Unah Rate Logo">
             <span>UnahRate</span>
         </a>
         
@@ -65,7 +46,7 @@
         <button id="loginButton">Acceder</button>
     </div>
 
-    <div class="admin-panel" id="adminPanel" style="display: none;">
+    <div class="admin-panel" id="adminPanel">
         <h2>Reseñas Reportadas</h2>
         <div id="reportedReviews"></div>
     </div>

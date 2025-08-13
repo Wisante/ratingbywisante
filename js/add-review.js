@@ -49,6 +49,7 @@ if (!professorName || professorName.length < 2 || professorName.length > 50) {
         await db.collection("reviews").add({
             professor: professorName,
             professor_lowercase: professorName.toLowerCase(), // Campo para búsquedas
+            votedBy: [], // Array para registrar votos
             professorId: professorId,
             faculty: faculty,
             course: courseName,
@@ -58,8 +59,7 @@ if (!professorName || professorName.length < 2 || professorName.length > 50) {
             userId: user.uid,
             date: firebase.firestore.FieldValue.serverTimestamp(),
             helpfulCount: 0,
-            reported: false,
-            votedBy: [] // Array para registrar votos
+            reported: false
         });
         
         alert("¡Reseña enviada con éxito!");
