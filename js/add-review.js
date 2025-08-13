@@ -1,13 +1,9 @@
-fetch('/.netlify/functions/getFirebaseConfig')
-  .then(response => response.json())
-  .then(config => {
-    if (!firebase.apps.length) {
-      firebase.initializeApp(config);
-    }
-    // El resto de tu código (db, auth, etc.)
-    const db = firebase.firestore();
+import { initializeFirebase } from './auth/authConfig.js';
+import { sanitizeInput } from '../utils.js';
 
-function generateProfessorId(name) {
+initializeFirebase().then(({ auth, db }) => {
+
+    function generateProfessorId(name) {
     return name.toLowerCase()
               .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Elimina acentos
               .replace(/\s+/g, "-") // Reemplaza espacios con guiones
@@ -18,7 +14,7 @@ function generateProfessorId(name) {
 document.getElementById("reviewForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const user = firebase.auth().currentUser;
+    const user = auth.currentUser;
     if (!user) return window.location.href = '/auth/login.html';
 
     const professorName = sanitizeInput(document.getElementById("professorName").value);
@@ -29,7 +25,7 @@ document.getElementById("reviewForm").addEventListener("submit", async (e) => {
     const comment = sanitizeInput(document.getElementById("comment").value);
 
   // Verificar límite de 3 reseñas/día (usando función helper)
-  const reviewsToday = await checkDailyLimit(user.uid);
+  const reviewsToday = await checkDailyLimit(db, user.uid);
   if (reviewsToday >= 3) {
     alert('Límite de 3 reseñas por día alcanzado');
     return;
@@ -71,7 +67,7 @@ if (!professorName || professorName.length < 2 || professorName.length > 50) {
 });
 
 // Función para verificar límite diario
-async function checkDailyLimit(userId) {
+async function checkDailyLimit(db, userId) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -83,5 +79,6 @@ async function checkDailyLimit(userId) {
   return snapshot.size;
 }
 
-  })
-  .catch(error => console.error("Error loading Firebase config:", error));
+}).catch(error => {
+    console.error("Failed to initialize Firebase for add-review page.", error);
+});

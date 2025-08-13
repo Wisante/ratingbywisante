@@ -1,100 +1,82 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Muestra el mensaje de carga inmediatamente
-    document.body.innerHTML = `
-      <div class="admin-loading">
-        <h2>Verificando permisos...</h2>
-      </div>
-    `;
-
-    fetch('/.netlify/functions/getFirebaseConfig')
-      .then(response => response.json())
-      .then(config => {
-        if (!firebase.apps.length) {
-          firebase.initializeApp(config);
-        }
-
-        const auth = firebase.auth();
-    const db = firebase.firestore();
-
-// Verificar admin al cargar la página
-firebase.auth().onAuthStateChanged(async (user) => {
-  if (!user) {
-    window.location.href = '/auth/login.html';
-    return;
-  }
-
-  // Obtener lista de admins desde Netlify (vía función serverless)
-  const isAdmin = await checkAdminStatus(user.email);
-  
-  if (!isAdmin) {
-    alert('Acceso denegado: No tienes permisos de administrador');
-    window.location.href = '/index.html';
-    return;
-  }
-
-  // Cargar contenido del panel solo si es admin
-  loadAdminPanel();
-});
-
+import { initializeFirebase } from './auth/authConfig.js';
 import { checkAdminStatus } from '../utils.js';
 
-const deleteReview = async (reviewId) => {
-  try {
-    if (!confirm("¿Eliminar reseña?")) return;
-    await db.collection("reviews").doc(reviewId).delete();
-    loadReportedReviews();
-  } catch (error) {
-    console.error("Error al eliminar:", error);
-    alert("Error al eliminar. Revisa la consola.");
-  }
-};
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById("loginForm");
+    const adminPanel = document.getElementById("adminPanel");
+    const loadingContainer = document.createElement('div');
+    loadingContainer.className = 'admin-loading';
+    loadingContainer.innerHTML = '<h2>Verificando permisos...</h2>';
 
-const approveReview = async (reviewId) => {
-  try {
-    await db.collection("reviews").doc(reviewId).update({ reported: false });
-    loadReportedReviews();
-  } catch (error) {
-    console.error("Error al aprobar:", error);
-    alert("Error al aprobar. Revisa la consola.");
-  }
-};
+    // Hide main content and show loading
+    if(adminPanel) adminPanel.style.display = 'none';
+    if(loginForm) loginForm.style.display = 'none';
+    document.body.appendChild(loadingContainer);
 
-// Login
-document.getElementById("loginButton").addEventListener("click", () => {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    initializeFirebase().then(({ auth, db }) => {
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                // Not logged in, show login form
+                loadingContainer.remove();
+                if(loginForm) loginForm.style.display = 'block';
 
-    auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-            document.getElementById("loginForm").style.display = "none";
-            document.getElementById("adminPanel").style.display = "block";
-            loadReportedReviews();
-        })
-        .catch((error) => alert("Error: " + error.message));
+                const loginButton = document.getElementById("loginButton");
+                if (loginButton) {
+                    loginButton.addEventListener("click", () => {
+                        const email = document.getElementById("email").value;
+                        const password = document.getElementById("password").value;
+                        auth.signInWithEmailAndPassword(email, password)
+                            .catch((error) => alert("Error: " + error.message));
+                    });
+                }
+                return;
+            }
+
+            const isAdmin = await checkAdminStatus(user.email);
+
+            if (!isAdmin) {
+                loadingContainer.remove();
+                alert('Acceso denegado: No tienes permisos de administrador');
+                window.location.href = '/index.html';
+                return;
+            }
+
+            // Is admin, show admin panel
+            loadingContainer.remove();
+            if(adminPanel) adminPanel.style.display = 'block';
+            loadAdminContent(auth, db);
+        });
+    }).catch(error => {
+        loadingContainer.innerHTML = `<h2>Error de configuración</h2><p>No se pudo cargar la configuración de Firebase.</p>`;
+        console.error("Error initializing Firebase:", error);
+    });
 });
 
-// Cargar reseñas reportadas
-function loadReportedReviews() {
+function loadAdminContent(auth, db) {
+    const logoutButton = document.getElementById("logoutButton");
+    if(logoutButton) {
+        logoutButton.addEventListener("click", () => {
+            auth.signOut().then(() => location.reload());
+        });
+    }
+
     const container = document.getElementById("reportedReviews");
+    if (!container) return;
     container.innerHTML = "<p>Cargando reseñas reportadas...</p>";
 
-    // Escuchar cambios en tiempo real
     db.collection("reviews")
         .where("reported", "==", true)
-        .orderBy("reportedAt", "desc") // Ordenar por fecha de reporte
+        .orderBy("reportedAt", "desc")
         .onSnapshot((querySnapshot) => {
             container.innerHTML = "";
-            
             if (querySnapshot.empty) {
                 container.innerHTML = "<p>No hay reseñas reportadas.</p>";
                 return;
             }
-
             querySnapshot.forEach((doc) => {
                 const reviewItem = document.createElement("div");
                 reviewItem.className = "review-item";
                 reviewItem.dataset.id = doc.id;
-                
                 reviewItem.innerHTML = `
                     <p><strong>${doc.data().professor}</strong> - ${doc.data().course}</p>
                     <p>${doc.data().comment}</p>
@@ -102,11 +84,8 @@ function loadReportedReviews() {
                     <button class="delete-button">Eliminar</button>
                     <button class="approve-button">Aprobar</button>
                 `;
-                
-                // Agrega event listeners aquí
-                reviewItem.querySelector('.delete-button').addEventListener('click', () => deleteReview(doc.id));
-                reviewItem.querySelector('.approve-button').addEventListener('click', () => approveReview(doc.id));
-                
+                reviewItem.querySelector('.delete-button').addEventListener('click', () => deleteReview(db, doc.id));
+                reviewItem.querySelector('.approve-button').addEventListener('click', () => approveReview(db, doc.id));
                 container.appendChild(reviewItem);
             });
         }, (error) => {
@@ -115,20 +94,23 @@ function loadReportedReviews() {
         });
 }
 
-// Logout
-document.getElementById("logoutButton").addEventListener("click", () => {
-    auth.signOut()
-        .then(() => location.reload());
-});
+async function deleteReview(db, reviewId) {
+    try {
+        if (!confirm("¿Eliminar reseña?")) return;
+        await db.collection("reviews").doc(reviewId).delete();
+        // The onSnapshot listener will auto-update the UI, no need to call loadReportedReviews
+    } catch (error) {
+        console.error("Error al eliminar:", error);
+        alert("Error al eliminar. Revisa la consola.");
+    }
+}
 
-      })
-      .catch(error => {
-        console.error("Error loading Firebase config:", error)
-        document.body.innerHTML = `
-          <div class="admin-loading">
-            <h2>Error de configuración</h2>
-            <p>No se pudo cargar la configuración de Firebase.</p>
-          </div>
-        `;
-      });
-});
+async function approveReview(db, reviewId) {
+    try {
+        await db.collection("reviews").doc(reviewId).update({ reported: false });
+        // The onSnapshot listener will auto-update the UI
+    } catch (error) {
+        console.error("Error al aprobar:", error);
+        alert("Error al aprobar. Revisa la consola.");
+    }
+}

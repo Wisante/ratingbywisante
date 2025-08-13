@@ -1,26 +1,39 @@
-// js/auth/authConfig.js
-let auth, db, googleProvider;
+let firebasePromise = null;
 
-// Función para inicializar Firebase
-async function initFirebase() {
-  try {
-    const response = await fetch('/.netlify/functions/getFirebaseConfig');
-    const config = await response.json();
-    
-    if (!firebase.apps.length) {
-      firebase.initializeApp(config);
+/**
+ * Initializes Firebase and returns a promise that resolves with the services.
+ * This ensures Firebase is only initialized once.
+ * @returns {Promise<{auth: firebase.auth.Auth, db: firebase.firestore.Firestore, googleProvider: firebase.auth.GoogleAuthProvider}>}
+ */
+export function initializeFirebase() {
+    if (firebasePromise) {
+        return firebasePromise;
     }
-    
-    auth = firebase.auth();
-    db = firebase.firestore();
-    googleProvider = new firebase.auth.GoogleAuthProvider();
-    
-    return { auth, db, googleProvider };
-  } catch (error) {
-    console.error("Error initializing Firebase:", error);
-    throw error;
-  }
-}
 
-// Exportamos tanto la función de inicialización como las instancias
-export { initFirebase, auth, db, googleProvider };
+    firebasePromise = new Promise((resolve, reject) => {
+        fetch('/.netlify/functions/getFirebaseConfig')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(config => {
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(config);
+                }
+
+                const auth = firebase.auth();
+                const db = firebase.firestore();
+                const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+                resolve({ auth, db, googleProvider });
+            })
+            .catch(error => {
+                console.error("Error initializing Firebase:", error);
+                reject(error);
+            });
+    });
+
+    return firebasePromise;
+}
