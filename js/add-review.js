@@ -1,5 +1,5 @@
 import { initializeFirebase } from './auth/authConfig.js';
-import { sanitizeInput } from '../utils.js';
+import { sanitizeInput } from './utils.js';
 
 initializeFirebase().then(({ auth, db }) => {
 
