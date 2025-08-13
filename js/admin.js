@@ -1,11 +1,19 @@
-fetch('/.netlify/functions/getFirebaseConfig')
-  .then(response => response.json())
-  .then(config => {
-    if (!firebase.apps.length) {
-      firebase.initializeApp(config);
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    // Muestra el mensaje de carga inmediatamente
+    document.body.innerHTML = `
+      <div class="admin-loading">
+        <h2>Verificando permisos...</h2>
+      </div>
+    `;
 
-    const auth = firebase.auth();
+    fetch('/.netlify/functions/getFirebaseConfig')
+      .then(response => response.json())
+      .then(config => {
+        if (!firebase.apps.length) {
+          firebase.initializeApp(config);
+        }
+
+        const auth = firebase.auth();
     const db = firebase.firestore();
 
 // Verificar admin al cargar la página
@@ -126,5 +134,14 @@ document.getElementById("logoutButton").addEventListener("click", () => {
         .then(() => location.reload());
 });
 
-  })
-  .catch(error => console.error("Error loading Firebase config:", error));
+      })
+      .catch(error => {
+        console.error("Error loading Firebase config:", error)
+        document.body.innerHTML = `
+          <div class="admin-loading">
+            <h2>Error de configuración</h2>
+            <p>No se pudo cargar la configuración de Firebase.</p>
+          </div>
+        `;
+      });
+});

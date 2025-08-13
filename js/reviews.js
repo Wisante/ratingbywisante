@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Cargar reseñas filtradas
-function loadReviews() {
+async function loadReviews() {
     const container = document.getElementById("reviewsList");
     container.innerHTML = `<p>Cargando reseñas...</p>`;
 
@@ -118,7 +118,6 @@ function loadReviews() {
     if (!searchProfessor) {
         query = query.orderBy("date", "desc");
     }
-
 
     try {
         const querySnapshot = await query.get();
@@ -285,30 +284,35 @@ document.getElementById("searchButton").addEventListener("click", async () => {
         return;
     }
 
-    const snapshot = await query.get();
+    try {
+        const snapshot = await query.get();
 
-    // Procesar resultados
-    const professorsMap = new Map();
-    snapshot.docs.forEach(doc => {
-        const data = doc.data();
-        const professorKey = data.professorId || data.professor.toLowerCase();
-        
-        if (!professorsMap.has(professorKey)) {
-            professorsMap.set(professorKey, {
-                id: professorKey,
-                name: data.professor,
-                faculty: data.faculty,
-                reviews: [],
-                totalRating: 0
+        // Procesar resultados
+        const professorsMap = new Map();
+        snapshot.docs.forEach(doc => {
+            const data = doc.data();
+            const professorKey = data.professorId || data.professor.toLowerCase();
+
+            if (!professorsMap.has(professorKey)) {
+                professorsMap.set(professorKey, {
+                    id: professorKey,
+                    name: data.professor,
+                    faculty: data.faculty,
+                    reviews: [],
+                    totalRating: 0
+                });
+            }
+            const professor = professorsMap.get(professorKey);
+            professor.reviews.push({
+                ...data,
+                id: doc.id
             });
-        }
-        const professor = professorsMap.get(professorKey);
-        professor.reviews.push({
-            ...data,
-            id: doc.id
+            professor.totalRating += data.rating;
         });
-        professor.totalRating += data.rating;
-    });
+    } catch (error) {
+        console.error("Error al buscar reseñas:", error);
+        alert("Ocurrió un error al realizar la búsqueda.");
+    }
 
     // Calcular promedio para cada profesor
     currentProfessors = Array.from(professorsMap.values()).map(prof => ({
@@ -329,23 +333,15 @@ function generateUserId() {
 
 // Event delegation para votar y reportar
 document.addEventListener('click', (e) => {
-  const target = e.target;
-  const action = target.closest('[data-action]')?.dataset.action;
-
-  if (action === 'add-review') {
-    window.location.href = 'add-review.html';
-    return;
-  }
-
   // Para botones de votar/reportar
-  const cardButton = target.closest('.card-button');
-  const cardReport = target.closest('.card-report');
+  const cardButton = e.target.closest('.card-button');
+  const cardReport = e.target.closest('.card-report');
   
   if (cardButton) voteHelpful(cardButton.dataset.reviewId, true);
   if (cardReport) reportReview(cardReport.dataset.reviewId);
 
   // Para el botón de volver
-  if (target.closest('.back-button')) {
+  if (e.target.closest('.back-button')) {
     if (currentProfessors.length > 0) {
       displayProfessorsList(currentProfessors);
     } else {
