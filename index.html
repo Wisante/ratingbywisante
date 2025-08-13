@@ -40,28 +40,7 @@
 <script src="/js/ga-config.js"></script>
 </head>
 <body>
-    <nav class="navbar">
-    <div class="navbar-container">
-        <!-- Logo UNAH (opcional) -->
-        <a href="index.html" class="navbar-logo">
-            <img src="img/unahrate-logo.webp" loading="lazy" width="40" class="navbar-logo-img" alt="Unah Rate Logo">
-            <span>UnahRate</span>
-        </a>
-        
-        <!-- Menú Principal -->
-        <ul class="navbar-menu">
-            <li><a class="active" href="index.html"><i class="fas fa-home"></i> Inicio</a></li>
-            <li><a href="reviews.html"><i class="fa-solid fa-rectangle-list"></i> Reseñas</a></li>
-            <li><a href="add-review.html"><i class="fas fa-user-edit"></i> Agregar Reseña</a></li>
-            <li><a href="admin.html"><i class="fa-solid fa-screwdriver-wrench"></i> Moderación</a></li>
-        </ul>
-
-        <!-- Botón para móviles -->
-        <button class="navbar-toggle" aria-label="Menú">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-    </div>
-</nav>
+    <div id="navbar-placeholder"></div>
 
     <main>
         <div class="contenedor">
@@ -117,9 +96,13 @@
     </footer>
 
     <!-- Firebase y app.js -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js" integrity="sha384-gNTK1b3nq+NMsDf1ASdhbVEwXj9tjBeobuvcjWGlmIffN9OP+Q0SU9Q10JKPZryT" crossorigin="anonymous"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js" integrity="sha384-RCX4/afwL4rcvPna7SzxURYLlkH4PeSnyydnrIn/zzZyviOL3A9RZjNPvXunkiFD" crossorigin="anonymous"></script>
-    <script src="js/app.js?v=1"></script>
-    <script src="js/navbar.js?v=1"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script type="module" src="/js/auth/authConfig.js"></script>
+    <script type="module" src="/js/utils.js"></script>
+    <script type="module" src="/js/navbar.js"></script>
+    <script type="module" src="/js/auth/auth-manager.js"></script>
+    <script src="/js/app.js?v=1"></script>
 </body>
 </html>

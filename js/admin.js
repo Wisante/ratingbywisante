@@ -36,20 +36,7 @@ firebase.auth().onAuthStateChanged(async (user) => {
   loadAdminPanel();
 });
 
-// Función para verificar correo admin
-async function checkAdminStatus(email) {
-  try {
-    const response = await fetch('/.netlify/functions/checkAdmin', {
-      method: 'POST',
-      body: JSON.stringify({ email: email })
-    });
-    const data = await response.json();
-    return data.isAdmin;
-  } catch (error) {
-    console.error("Error verificando admin:", error);
-    return false;
-  }
-}
+import { checkAdminStatus } from '../utils.js';
 
 const deleteReview = async (reviewId) => {
   try {
