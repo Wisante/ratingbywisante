@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Perfil - UnahRate</title>
+    <title>UNAH Rate - Mi Perfil</title>
+    <meta name="description" content="Administra tu perfil, reseñas y configuración de cuenta en UNAH Rate">
+    <meta name="keywords" content="UNAH, perfil, calificar profesores, reseñas UNAH, configuración de cuenta, educación superior Honduras">
+    <link rel="shortcut icon" href="../img/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../css/profile.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap">
 </head>
 <body>
     <nav class="navbar">
@@ -13,41 +17,95 @@
             <span class="material-icons">arrow_back</span>
         </a>
         <h1>Mi Perfil</h1>
+        <div class="spacer"></div> <!-- Para centrar el título -->
     </nav>
 
     <main class="profile-container">
-        <div class="profile-header">
-            <div class="avatar">
-                <img id="userPhoto" src="../img/default-avatar.png" alt="Foto de perfil">
+        <!-- Sección de Información del Usuario -->
+        <section class="user-info-section">
+            <div class="avatar-container">
+                <img id="userPhoto" src="../img/default-avatar.png" alt="Avatar" class="user-avatar">
+                <button id="editPhotoBtn" class="icon-button">
+                    <span class="material-icons">edit</span>
+                </button>
             </div>
             <h2 id="userName">Cargando...</h2>
-            <p id="userEmail"></p>
-        </div>
+            <p id="userEmail" class="user-email">usuario@unah.hn</p>
+            <p id="memberSince" class="member-since">Miembro desde 2023</p>
+        </section>
 
-        <div class="profile-actions">
-            <button id="changePasswordBtn" class="btn-action">
-                <span class="material-icons">lock_reset</span>
-                Cambiar Contraseña
-            </button>
-            <button id="logoutBtn" class="btn-logout">
-                <span class="material-icons">logout</span>
-                Cerrar Sesión
-            </button>
-        </div>
-
-        <section class="reviews-section">
-            <h3>Mis Reseñas <span id="reviewsCount">(0)</span></h3>
-            <div id="myReviews" class="reviews-grid">
-                <!-- Reseñas se cargarán aquí -->
+        <!-- Sección de Acciones -->
+        <section class="actions-section">
+            <div class="action-card" id="editProfileBtn">
+                <span class="material-icons">person</span>
+                <span>Editar perfil</span>
+            </div>
+            <div class="action-card" id="changePasswordBtn">
+                <span class="material-icons">lock</span>
+                <span>Cambiar contraseña</span>
+            </div>
+            <div class="action-card" id="privacySettingsBtn">
+                <span class="material-icons">privacy_tip</span>
+                <span>Privacidad</span>
             </div>
         </section>
+
+        <!-- Sección de Estadísticas -->
+        <section class="stats-section">
+            <div class="stat-card">
+                <span class="stat-number" id="reviewsCount">0</span>
+                <span class="stat-label">Reseñas</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="helpfulVotes">0</span>
+                <span class="stat-label">Votos útiles</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="averageRating">0.0</span>
+                <span class="stat-label">Promedio</span>
+            </div>
+        </section>
+
+        <!-- Sección de Reseñas -->
+        <section class="reviews-section">
+            <div class="section-header">
+                <h3>Mis Reseñas Recientes</h3>
+                <button id="viewAllReviews" class="text-button">Ver todas</button>
+            </div>
+            <div id="reviewsList" class="reviews-list">
+                <!-- Las reseñas se cargarán aquí dinámicamente -->
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Cargando reseñas...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Botón de Cerrar Sesión -->
+        <button id="logoutBtn" class="logout-button">
+            <span class="material-icons">logout</span>
+            Cerrar sesión
+        </button>
     </main>
+
+    <!-- Modales -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Cambiar contraseña</h3>
+            <form id="passwordForm">
+                <input type="password" id="currentPassword" placeholder="Contraseña actual" required>
+                <input type="password" id="newPassword" placeholder="Nueva contraseña (mín. 8 caracteres)" required>
+                <input type="password" id="confirmNewPassword" placeholder="Confirmar nueva contraseña" required>
+                <button type="submit" class="submit-button">Actualizar contraseña</button>
+            </form>
+        </div>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script type="module" src="/js/auth/authConfig.js"></script>
-    <script src="../js/auth/profile.js"></script>
-    <script src="/js/auth/authCheck.js"></script>
+    <script type="module" src="../js/auth/authConfig.js"></script>
+    <script type="module" src="../js/auth/profile.js"></script>
 </body>
 </html>

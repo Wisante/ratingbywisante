@@ -1,129 +1,333 @@
-/* Estilos generales */
-body {
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f5f5f5;
-    color: #333;
+:root {
+    --primary-color: #0a4b78;
+    --secondary-color: #e3f2fd;
+    --error-color: #d32f2f;
+    --text-color: #333;
+    --light-text: #666;
+    --border-color: #e0e0e0;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Estilos Base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f5f5;
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* Navbar */
 .navbar {
-    background-color: #0a4b78;
-    color: white;
-    padding: 1rem;
     display: flex;
     align-items: center;
+    padding: 1rem;
+    background-color: var(--primary-color);
+    color: white;
     position: sticky;
     top: 0;
     z-index: 100;
 }
 
 .navbar h1 {
-    margin: 0 auto;
     font-size: 1.2rem;
+    font-weight: 500;
+    margin: 0 auto;
 }
 
 .back-button {
     color: white;
     text-decoration: none;
+    display: flex;
+    align-items: center;
 }
 
-/* Contenedor principal */
+.spacer {
+    flex: 1;
+}
+
+/* Contenedor Principal */
 .profile-container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 1rem;
+    padding: 1.5rem;
 }
 
-/* Header del perfil */
-.profile-header {
+/* Sección de Información del Usuario */
+.user-info-section {
     text-align: center;
-    margin: 2rem 0;
+    margin-bottom: 2rem;
 }
 
-.avatar {
+.avatar-container {
+    position: relative;
+    width: fit-content;
+    margin: 0 auto 1rem;
+}
+
+.user-avatar {
     width: 100px;
     height: 100px;
-    margin: 0 auto;
     border-radius: 50%;
-    overflow: hidden;
-    border: 3px solid #0a4b78;
-}
-
-.avatar img {
-    width: 100%;
-    height: 100%;
     object-fit: cover;
+    border: 3px solid var(--primary-color);
 }
 
-.profile-header h2 {
-    margin: 0.5rem 0 0;
-    font-size: 1.5rem;
+.icon-button {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow);
 }
 
-.profile-header p {
-    margin: 0;
-    color: #666;
+.user-email {
+    color: var(--light-text);
+    font-size: 0.9rem;
 }
 
-/* Botones de acción */
-.profile-actions {
+.member-since {
+    color: var(--light-text);
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+/* Sección de Acciones */
+.actions-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.action-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    margin: 2rem 0;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    box-shadow: var(--shadow);
 }
 
-.btn-action, .btn-logout {
+.action-card:hover {
+    transform: translateY(-3px);
+}
+
+.action-card .material-icons {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+/* Sección de Estadísticas */
+.stats-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    display: block;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--light-text);
+}
+
+/* Sección de Reseñas */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.text-button {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.reviews-list {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: var(--shadow);
+}
+
+.review-card {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.review-card:last-child {
+    border-bottom: none;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.review-professor {
+    font-weight: 600;
+}
+
+.review-rating {
+    color: #ffc107;
+}
+
+.review-comment {
+    margin-bottom: 0.5rem;
+}
+
+.review-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--light-text);
+}
+
+/* Botón de Cerrar Sesión */
+.logout-button {
+    width: 100%;
+    padding: 1rem;
+    margin-top: 2rem;
+    background: none;
+    border: 1px solid var(--error-color);
+    color: var(--error-color);
+    border-radius: 8px;
+    font-weight: 500;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 0.8rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s;
 }
 
-.btn-action {
-    background-color: #e3f2fd;
-    color: #0a4b78;
+.logout-button:hover {
+    background: #ffebee;
 }
 
-.btn-logout {
-    background-color: #ffebee;
-    color: #c62828;
+/* Modales */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Sección de reseñas */
-.reviews-section {
-    margin-top: 2rem;
-}
-
-.reviews-section h3 {
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 0.5rem;
-}
-
-.reviews-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.review-card {
+.modal-content {
     background: white;
+    padding: 2rem;
     border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+}
+
+.close-modal {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.modal h3 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.modal input {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.submit-button {
+    width: 100%;
+    padding: 0.8rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    text-align: center;
+    padding: 2rem;
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top: 4px solid var(--primary-color);
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* Responsive */
 @media (max-width: 600px) {
-    .reviews-grid {
+    .actions-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-section {
         grid-template-columns: 1fr;
     }
 }

@@ -1,25 +1,20 @@
-// Verificar si ya votó/reportó
-async function hasUserAction(reviewId, actionType) {
-  const user = firebase.auth().currentUser;
-  if (!user) return false;
+import { initFirebase, auth, db } from './authConfig.js';
 
-  const snapshot = await db.collection("userActions")
-    .where("userId", "==", user.uid)
-    .where("reviewId", "==", reviewId)
-    .where("actionType", "==", actionType) // 'vote' o 'report'
-    .limit(1)
-    .get();
+await initFirebase();
 
-  return !snapshot.empty;
-}
+async function voteHelpful(reviewId) {
+  const user = auth.currentUser;
+  if (!user) return alert('Inicia sesión para votar');
 
-// Registrar acción (voto/reporte)
-async function recordUserAction(reviewId, actionType) {
-  const user = firebase.auth().currentUser;
-  await db.collection("userActions").add({
-    userId: user.uid,
-    reviewId: reviewId,
-    actionType: actionType,
-    timestamp: new Date()
-  });
+  const reviewRef = db.collection('reviews').doc(reviewId);
+  
+  try {
+    await db.runTransaction(async (transaction) => {
+      const reviewDoc = await transaction.get(reviewRef);
+      const newCount = (reviewDoc.data().helpfulCount || 0) + 1;
+      transaction.update(reviewRef, { helpfulCount: newCount });
+    });
+  } catch (error) {
+    console.error("Error al votar:", error);
+  }
 }

@@ -1,11 +1,22 @@
-import { auth } from '../../auth/authConfig.js';
-import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js';
-import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
+// js/auth/register.js
+import { initFirebase, auth, db, googleProvider } from './authConfig.js';
 
-document.getElementById('registerForm').addEventListener('submit', async (e) => {
+// Inicializamos Firebase al cargar la página
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    await initFirebase();
+    setupEventListeners();
+  } catch (error) {
+    console.error("Initialization error:", error);
+    alert("Error al inicializar la aplicación. Por favor recarga la página.");
+  }
+});
+
+function setupEventListeners() {
+  // Registro con email/contraseña
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    // Obtener valores
     const displayName = document.getElementById('displayName').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
@@ -13,7 +24,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
 
     // Validaciones
     if (!email.endsWith('@unah.hn')) {
-        alert('Solo se permiten correos institucionales @unah.hn');
+        alert('Solo correos @unah.hn permitidos');
         return;
     }
 
@@ -26,74 +37,51 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         alert('La contraseña debe tener al menos 8 caracteres');
         return;
     }
-
+    
     try {
-        // Crear usuario
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        
-        // Actualizar perfil
-        await userCredential.user.updateProfile({
-            displayName: displayName
-        });
-
-        // Guardar datos adicionales en Firestore
-        await setDoc(doc(db, "users", userCredential.user.uid), {
+      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+      await db.collection('users').doc(userCredential.user.uid).set({
             displayName: displayName,
             email: email,
-            createdAt: new Date(),
-            role: 'estudiante',
-            avatarUrl: '../img/default-avatar.png'
-        });
-
-        // Enviar verificación por correo (opcional)
-        await userCredential.user.sendEmailVerification();
-        
-        alert('¡Registro exitoso! Se ha enviado un correo de verificación.');
-        window.location.href = 'profile.html';
+            photoURL: '../img/default-avatar.png',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            role: 'user',
+            reviewsCount: 0
+      });
+      alert('¡Registro exitoso!');
+      window.location.href = 'profile.html';
     } catch (error) {
-        console.error("Error en registro:", error);
-        showAuthError(error);
+      console.error("Registration error:", error);
+      alert(error.message);
     }
-});
+  });
 
-// Registro con Google
-document.getElementById('googleRegister').addEventListener('click', async () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    
+  // Registro con Google
+  document.getElementById('googleRegister').addEventListener('click', async () => {
     try {
-        const result = await firebase.auth().signInWithPopup(provider);
-        
-        // Verificar dominio UNAH
-        if (!result.user.email.endsWith('@unah.hn')) {
-            await firebase.auth().signOut();
-            throw new Error('Solo correos @unah.hn permitidos');
-        }
+      const result = await auth.signInWithPopup(googleProvider);
+      if (!result.user.email.endsWith('@unah.hn')) {
+        await auth.signOut();
+        throw new Error('Solo correos @unah.hn permitidos');
+      }
 
-        // Guardar datos adicionales si es nuevo usuario
-        if (result.additionalUserInfo.isNewUser) {
-            await firebase.firestore().collection('users').doc(result.user.uid).set({
+        // Verificar si es nuevo usuario
+        const userDoc = await db.collection('users').doc(result.user.uid).get();
+        if (!userDoc.exists) {
+            await db.collection('users').doc(result.user.uid).set({
                 displayName: result.user.displayName,
                 email: result.user.email,
-                avatarUrl: result.user.photoURL || '../img/default-avatar.png',
+                photoURL: result.user.photoURL,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                role: 'estudiante'
+                role: 'user',
+                reviewsCount: 0
             });
         }
-        
-        window.location.href = '../index.html';
-    } catch (error) {
-        showAuthError(error);
-    }
-});
 
-// Mostrar errores amigables
-function showAuthError(error) {
-    const errorMessages = {
-        'auth/email-already-in-use': 'Este correo ya está registrado',
-        'auth/invalid-email': 'Correo electrónico inválido',
-        'auth/weak-password': 'La contraseña debe tener al menos 8 caracteres',
-        'auth/popup-closed-by-user': 'Cancelaste el registro con Google'
-    };
-    
-    alert(errorMessages[error.code] || 'Error en el registro: ' + error.message);
+      window.location.href = '../index.html';
+    } catch (error) {
+      console.error("Google registration error:", error);
+      alert(error.message);
+    }
+  });
 }

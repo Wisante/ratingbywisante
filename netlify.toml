@@ -4,16 +4,6 @@
     Cache-Control = "no-cache, max-age=0, must-revalidate"  # HTML siempre fresco
 
 [[headers]]
-  for = "/css/*"
-  [headers.values]
-    Cache-Control = "public, max-age=604800"  # CSS cacheado por 1 semana
-
-[[headers]]
-  for = "/js/*"
-  [headers.values]
-    Cache-Control = "public, max-age=604800"  # JS cacheado por 1 semana
-
-[[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"

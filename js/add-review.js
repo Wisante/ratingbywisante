@@ -18,16 +18,15 @@ function generateProfessorId(name) {
 document.getElementById("reviewForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const professorName = document.getElementById("professorName").value;
-    const courseName = document.getElementById("courseName").value;
+    const user = firebase.auth().currentUser;
+    if (!user) return window.location.href = '/auth/login.html';
+
+    const professorName = sanitizeInput(document.getElementById("professorName").value);
+    const courseName = sanitizeInput(document.getElementById("courseName").value);
     const campus = document.getElementById("campus").value;
     const faculty = document.getElementById("faculty").value;
-    const rating = document.getElementById("rating").value;
+    const rating = parseInt(document.getElementById("rating").value);
     const comment = sanitizeInput(document.getElementById("comment").value);
-    const professorId = generateProfessorId(professorName);
-
-  const user = firebase.auth().currentUser;
-  if (!user) return window.location.href = '/auth/login.html';
 
   // Verificar límite de 3 reseñas/día (usando función helper)
   const reviewsToday = await checkDailyLimit(user.uid);
@@ -42,27 +41,31 @@ if (!professorName || professorName.length < 2 || professorName.length > 50) {
   return;
 }
 
-    db.collection("reviews").add({
-        professor: professorName,
-        professorId: professorId, // Campo nuevo para agrupar reseñas
-        faculty: faculty,
-        course: courseName,
-        campus: campus,
-        rating: parseInt(rating),
-        comment: comment,
-        date: new Date(),
-        userId: user.uid,
-        helpfulCount: 0, // Inicializar votos útiles
-        reported: false // Por defecto no reportado
-    })
-    .then(() => {
+    try {
+        // Generar ID único para el profesor
+        const professorId = generateProfessorId(professorName);
+        
+        // Crear la reseña
+        await db.collection("reviews").add({
+            professor: professorName,
+            professorId: professorId,
+            faculty: faculty,
+            course: courseName,
+            campus: campus,
+            rating: rating,
+            comment: comment,
+            userId: user.uid,
+            date: firebase.firestore.FieldValue.serverTimestamp(),
+            helpfulCount: 0,
+            reported: false
+        });
+        
         alert("¡Reseña enviada con éxito!");
-        window.location.href = "reviews.html";
-    })
-    .catch((error) => {
+        window.location.href = "index.html";
+    } catch (error) {
         console.error("Error al enviar:", error);
-        alert("Ocurrió un error. Intenta nuevamente.");
-    });
+        alert(`Error: ${error.message}`);
+    }
 });
 
 // Función para verificar límite diario

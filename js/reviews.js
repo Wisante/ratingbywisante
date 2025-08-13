@@ -8,39 +8,74 @@ fetch('/.netlify/functions/getFirebaseConfig')
     const db = firebase.firestore();
 
 async function voteHelpful(reviewId) {
-  const user = firebase.auth().currentUser;
-  if (!user) return window.location.href = '/auth/login.html';
+    const user = firebase.auth().currentUser;
+    if (!user) return window.location.href = '/auth/login.html';
 
-  // Verificar si ya votó (ahora en Firestore, no localStorage)
-  const voteRef = db.collection('votes').doc(`${user.uid}_${reviewId}`);
-  const voteDoc = await voteRef.get();
+    try {
+        await db.runTransaction(async (transaction) => {
+            // 1. Referencias
+            const voteRef = db.collection('votes').doc(`${user.uid}_${reviewId}`);
+            const reviewRef = db.collection('reviews').doc(reviewId);
+            
+            // 2. Lecturas
+            const voteDoc = await transaction.get(voteRef);
+            if (voteDoc.exists) throw new Error('Ya votaste esta reseña');
 
-  if (voteDoc.exists) {
-    alert('Ya votaste esta reseña');
-    return;
-  }
+            const reviewDoc = await transaction.get(reviewRef);
+            const currentCount = reviewDoc.data().helpfulCount || 0;
 
-  // Registrar voto
-  await voteRef.set({
-    userId: user.uid,
-    reviewId: reviewId,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-  });
+            // 3. Escrituras
+            transaction.set(voteRef, {
+                userId: user.uid,
+                reviewId: reviewId,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
 
-  // Actualizar contador
-  await db.collection('reviews').doc(reviewId).update({
-    helpfulCount: firebase.firestore.FieldValue.increment(1)
-  });
+            transaction.update(reviewRef, {
+                helpfulCount: currentCount + 1
+            });
+        });
+
+        // Actualizar UI
+        const button = document.querySelector(`.card-button[data-review-id="${reviewId}"]`);
+        if (button) {
+            const count = parseInt(button.textContent.match(/\d+/) || 0);
+            button.textContent = `<i class="fa-regular fa-thumbs-up"></i> Útil (${count + 1})`;
+        }
+    } catch (error) {
+        console.error("Error al votar:", error);
+        alert(error.message);
+    }
 }
 
-const reportReview = function(reviewId) {
-  if (confirm("¿Reportar esta reseña?")) {
-    db.collection("reviews").doc(reviewId).update({
-      reported: true,
-      reportedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => alert("Reseña reportada"));
-  }
-};
+async function reportReview(reviewId) {
+    const user = firebase.auth().currentUser;
+    if (!user) return window.location.href = '/auth/login.html';
+
+    const reason = prompt("Motivo del reporte (Spam, Inapropiado, etc):");
+    if (!reason) return;
+
+    try {
+        // Crear reporte
+        await db.collection('reports').add({
+            reviewId: reviewId,
+            userId: user.uid,
+            reason: reason,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Opcional: Marcar reseña como reportada
+        await db.collection('reviews').doc(reviewId).update({
+            reported: true,
+            reportedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        alert('Reporte enviado. ¡Gracias!');
+    } catch (error) {
+        console.error("Error al reportar:", error);
+        alert(`Error: ${error.message}`);
+    }
+}
 
 // Obtener parámetro de URL (ej: reviews.html?campus=Tegucigalpa)
 const urlParams = new URLSearchParams(window.location.search);
@@ -276,7 +311,6 @@ function displayProfessorProfile(professor) {
                             <div class="review-content">
                             <small><strong>${professor.faculty} • ${review.campus} - ${review.date.toDate().toLocaleDateString()}</strong></small>
                                 <p><strong>${review.course}</strong> | <span class="stars">${"★".repeat(review.rating)}</span>${"☆".repeat(5 - review.rating)}</p>
-                                <p><span>${review.userId || "Anónimo"}</span> opina esto:</p>
                                 <p>${review.comment}</p>
                             </div>
 
