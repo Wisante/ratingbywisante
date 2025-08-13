@@ -89,15 +89,13 @@
     </main>
 
     <!-- Modales -->
-    <div id="changePasswordModal" class="modal">
+    <div id="editProfileModal" class="modal">
         <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h3>Cambiar contraseña</h3>
-            <form id="passwordForm">
-                <input type="password" id="currentPassword" placeholder="Contraseña actual" required>
-                <input type="password" id="newPassword" placeholder="Nueva contraseña (mín. 8 caracteres)" required>
-                <input type="password" id="confirmNewPassword" placeholder="Confirmar nueva contraseña" required>
-                <button type="submit" class="submit-button">Actualizar contraseña</button>
+            <span class="close-modal" id="closeEditProfile">&times;</span>
+            <h3>Editar Perfil</h3>
+            <form id="editProfileForm">
+                <input type="text" id="newDisplayName" placeholder="Nuevo nombre de usuario" required>
+                <button type="submit" class="submit-button">Guardar Cambios</button>
             </form>
         </div>
     </div>

@@ -46,7 +46,7 @@ initializeFirebase().then(({ auth, db }) => {
         }
 
         // Cargar reseñas del usuario
-        loadUserReviews(db, user.uid);
+        loadUserReviewsAndStats(db, user.uid);
     });
 
     // Attach listeners that need auth and db
@@ -57,33 +57,43 @@ initializeFirebase().then(({ auth, db }) => {
     // Consider showing an error message on the page instead of redirecting
 });
 
-// Cargar reseñas del usuario
-async function loadUserReviews(db, userId) {
+// Cargar reseñas y estadísticas del usuario
+async function loadUserReviewsAndStats(db, userId) {
     try {
         const querySnapshot = await db.collection('reviews')
             .where('userId', '==', userId)
-            .orderBy('date', 'desc') // Assuming 'date' field exists from review creation
-            .limit(5)
+            .orderBy('date', 'desc')
             .get();
 
-        reviewsList.innerHTML = ''; // Limpiar spinner
-        
         if (querySnapshot.empty) {
             reviewsList.innerHTML = '<p class="no-reviews">No has publicado reseñas aún.</p>';
+            reviewsCount.textContent = 0;
+            helpfulVotes.textContent = 0;
+            averageRating.textContent = 'N/A';
             return;
         }
 
-        // Calcular promedio de ratings
         let totalRating = 0;
         let totalHelpful = 0;
+        const allReviews = [];
 
         querySnapshot.forEach(doc => {
             const review = doc.data();
+            allReviews.push(review);
             totalRating += review.rating;
             totalHelpful += review.helpfulCount || 0;
+        });
 
-            const reviewDate = review.createdAt.toDate().toLocaleDateString();
-            
+        // Actualizar estadísticas globales
+        reviewsCount.textContent = querySnapshot.size;
+        averageRating.textContent = (totalRating / querySnapshot.size).toFixed(1);
+        helpfulVotes.textContent = totalHelpful;
+
+        // Mostrar solo las 5 más recientes
+        const recentReviews = allReviews.slice(0, 5);
+        reviewsList.innerHTML = ''; // Limpiar spinner
+        recentReviews.forEach(review => {
+            const reviewDate = review.date ? review.date.toDate().toLocaleDateString() : 'Fecha no disponible';
             reviewsList.innerHTML += `
                 <div class="review-card">
                     <div class="review-header">
@@ -99,10 +109,6 @@ async function loadUserReviews(db, userId) {
             `;
         });
 
-        // Actualizar estadísticas
-        averageRating.textContent = (totalRating / querySnapshot.size).toFixed(1);
-        helpfulVotes.textContent = totalHelpful;
-        
     } catch (error) {
         console.error("Error cargando reseñas:", error);
         reviewsList.innerHTML = '<p class="error-message">Error al cargar reseñas. Intenta nuevamente.</p>';
@@ -110,50 +116,73 @@ async function loadUserReviews(db, userId) {
 }
 
 function setupEventListeners(auth, db) {
-    // Cambiar contraseña
-    changePasswordBtn.addEventListener('click', () => {
-        passwordModal.style.display = 'flex';
-    });
+    const editProfileBtn = document.getElementById('editProfileBtn');
+    const editProfileModal = document.getElementById('editProfileModal');
+    const closeEditProfile = document.getElementById('closeEditProfile');
+    const editProfileForm = document.getElementById('editProfileForm');
 
-    closeModal.addEventListener('click', () => {
-        passwordModal.style.display = 'none';
-    });
+    // Abrir modal de editar perfil
+    if (editProfileBtn) {
+        editProfileBtn.addEventListener('click', () => {
+            editProfileModal.style.display = 'flex';
+            document.getElementById('newDisplayName').value = auth.currentUser.displayName || '';
+        });
+    }
 
-    passwordForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    // Cerrar modal de editar perfil
+    if (closeEditProfile) {
+        closeEditProfile.addEventListener('click', () => {
+            editProfileModal.style.display = 'none';
+        });
+    }
 
-        const currentPassword = document.getElementById('currentPassword').value;
-        const newPassword = document.getElementById('newPassword').value;
-        const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+    // Guardar cambios del perfil
+    if (editProfileForm) {
+        editProfileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newDisplayName = document.getElementById('newDisplayName').value.trim();
+            if (!newDisplayName) return alert('El nombre no puede estar vacío.');
 
-        if (newPassword !== confirmNewPassword) {
-            return alert('Las contraseñas no coinciden');
-        }
-        if (newPassword.length < 8) {
-            return alert('La contraseña debe tener al menos 8 caracteres');
-        }
-
-        try {
             const user = auth.currentUser;
-            if (!user) throw new Error("No user is signed in.");
+            const userDocRef = db.collection('users').doc(user.uid);
 
-            const credential = firebase.auth.EmailAuthProvider.credential(
-                user.email,
-                currentPassword
-            );
+            try {
+                // Actualizar en Firebase Auth y Firestore en paralelo
+                await Promise.all([
+                    user.updateProfile({ displayName: newDisplayName }),
+                    userDocRef.update({ displayName: newDisplayName })
+                ]);
 
-            await user.reauthenticateWithCredential(credential);
-            await user.updatePassword(newPassword);
+                // Actualizar UI
+                document.getElementById('userName').textContent = newDisplayName;
+                alert('Perfil actualizado con éxito.');
+                editProfileModal.style.display = 'none';
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                alert('Error al actualizar el perfil.');
+            }
+        });
+    }
 
-            alert('¡Contraseña actualizada con éxito!');
-            passwordModal.style.display = 'none';
-            passwordForm.reset();
 
-        } catch (error) {
-            console.error("Error cambiando contraseña:", error);
-            alert(error.message);
-        }
-    });
+    // Cambiar contraseña
+    if (changePasswordBtn) {
+        changePasswordBtn.addEventListener('click', async () => {
+            const user = auth.currentUser;
+            if (!user) {
+                return alert('Debes iniciar sesión para cambiar tu contraseña.');
+            }
+            if (confirm('Se enviará un enlace para restablecer la contraseña a tu correo. ¿Deseas continuar?')) {
+                try {
+                    await auth.sendPasswordResetEmail(user.email);
+                    alert(`Enlace enviado a ${user.email}. Revisa tu bandeja de entrada.`);
+                } catch (error) {
+                    console.error("Error sending password reset email:", error);
+                    alert(`Error al enviar el correo: ${error.message}`);
+                }
+            }
+        });
+    }
 
     // Cerrar sesión
     logoutBtn.addEventListener('click', () => {
