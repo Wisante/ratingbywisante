@@ -37,6 +37,10 @@
     color: #000000;
 }
 
+.navbar-logo-img {
+    background: #f1f1f1;
+}
+
 /* Menú */
 .navbar-menu {
     display: flex;
