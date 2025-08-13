@@ -1,5 +1,5 @@
 import { auth } from './authConfig.js';
-import { renderNavbar, initNavbar } from '../navbar.js';
+import { renderNavbar, attachNavbarListeners } from '../navbar.js';
 import { checkAdminStatus } from '../utils.js';
 
 // This function will be called whenever the auth state changes.
