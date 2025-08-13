@@ -1,5 +1,5 @@
 import { initializeFirebase } from './auth/authConfig.js';
-import { checkAdminStatus } from '../utils.js';
+import { checkAdminStatus } from './utils.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById("loginForm");
